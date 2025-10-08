@@ -70,19 +70,36 @@ class SalaryCalculator {
 
             var value = element.value;
 
-            // Xử lý giá trị đặc biệt cho các trường hợp
+            // Xử lý giá trị đặc biệt cho các trường hợp với validation nghiêm ngặt
             if (id === 'workingDays' || id === 'dependents') {
-                var numericValue = parseInt(value);
+                if (value === '' || value === null || value === undefined) {
+                    return defaultValue;
+                }
+                var numericValue = parseInt(String(value), 10);
                 return isNaN(numericValue) ? defaultValue : numericValue;
             }
 
             if (id.includes('Overtime')) {
-                var floatValue = parseFloat(value);
+                if (value === '' || value === null || value === undefined) {
+                    return defaultValue;
+                }
+                var floatValue = parseFloat(String(value));
                 return isNaN(floatValue) ? defaultValue : floatValue;
             }
 
             if (id.includes('Insurance')) {
-                var floatValue = parseFloat(value);
+                if (value === '' || value === null || value === undefined) {
+                    return defaultValue;
+                }
+                var floatValue = parseFloat(String(value));
+                return isNaN(floatValue) ? defaultValue : floatValue;
+            }
+
+            if (id === 'nightShiftHours') {
+                if (value === '' || value === null || value === undefined) {
+                    return defaultValue;
+                }
+                var floatValue = parseFloat(String(value));
                 return isNaN(floatValue) ? defaultValue : floatValue;
             }
 
@@ -326,17 +343,27 @@ class SalaryCalculator {
             for (var i = 0; i < moneyInputs.length; i++) {
                 var input = moneyInputs[i];
                 if (input.id === 'basicSalary' || input.id === 'allowance' || input.id === 'otherIncome' || input.id === 'unionFee') {
-                    var value = input.value.replace(/[^\d]/g, '');
-                    if (value) {
-                        var numericValue = parseInt(value);
-                        if (!isNaN(numericValue) && numericValue >= 0) {
-                            value = numericValue.toLocaleString('vi-VN');
-                            input.value = value;
+                    var value = input.value;
+
+                    // Chỉ xử lý nếu có giá trị
+                    if (value !== '' && value !== null && value !== undefined) {
+                        // Loại bỏ tất cả ký tự không phải số
+                        var numericString = String(value).replace(/[^\d]/g, '');
+
+                        if (numericString !== '') {
+                            var numericValue = parseInt(numericString, 10);
+
+                            // Kiểm tra giá trị hợp lệ
+                            if (!isNaN(numericValue) && numericValue >= 0) {
+                                // Format với locale Việt Nam
+                                var formattedValue = numericValue.toLocaleString('vi-VN');
+                                input.value = formattedValue;
+                            } else {
+                                input.value = '';
+                            }
                         } else {
                             input.value = '';
                         }
-                    } else {
-                        input.value = '';
                     }
                 }
             }
@@ -350,11 +377,22 @@ class SalaryCalculator {
             return 0;
         }
 
-        var numericValue = parseInt(value.toString().replace(/[^\d]/g, ''));
+        // Đảm bảo value là string trước khi xử lý
+        var stringValue = String(value);
 
-        // Kiểm tra nếu parseInt trả về NaN
-        if (isNaN(numericValue)) {
-            console.warn('Invalid money value:', value, 'returning 0');
+        // Loại bỏ tất cả ký tự không phải số
+        var numericString = stringValue.replace(/[^\d]/g, '');
+
+        if (numericString === '') {
+            return 0;
+        }
+
+        // Parse sang số với validation nghiêm ngặt
+        var numericValue = parseInt(numericString, 10);
+
+        // Kiểm tra nếu parseInt trả về NaN hoặc không phải số hợp lệ
+        if (isNaN(numericValue) || numericValue < 0) {
+            console.warn('Invalid money value:', value, 'parsed as:', numericValue, 'returning 0');
             return 0;
         }
 
@@ -377,7 +415,26 @@ class SalaryCalculator {
             return 0;
         }
 
-        return Math.round(basicSalary / workingDays / 8);
+        // Tính toán với các bước riêng biệt để tránh lỗi Safari
+        var daysDivided = basicSalary / workingDays;
+        if (isNaN(daysDivided)) {
+            console.warn('Days division resulted in NaN:', basicSalary, '/', workingDays);
+            return 0;
+        }
+
+        var hoursDivided = daysDivided / 8;
+        if (isNaN(hoursDivided)) {
+            console.warn('Hours division resulted in NaN:', daysDivided, '/', 8);
+            return 0;
+        }
+
+        var roundedResult = Math.round(hoursDivided);
+        if (isNaN(roundedResult)) {
+            console.warn('Rounding resulted in NaN:', hoursDivided);
+            return 0;
+        }
+
+        return roundedResult;
     }
 
     calculateOvertimeSalary() {
@@ -446,18 +503,40 @@ class SalaryCalculator {
             var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
             var hourlyRate = this.calculateHourlyRate(basicSalary);
 
-            // Kiểm tra các giá trị đầu vào
-            if (isNaN(nightShiftHours) || nightShiftHours < 0) {
-                console.warn('Invalid night shift hours:', nightShiftHours);
+            // Kiểm tra các giá trị đầu vào với validation nghiêm ngặt hơn cho Safari
+            if (typeof nightShiftHours !== 'number' || isNaN(nightShiftHours) || nightShiftHours < 0) {
+                console.warn('Invalid night shift hours:', nightShiftHours, 'type:', typeof nightShiftHours);
                 nightShiftHours = 0;
             }
 
-            if (hourlyRate <= 0 || isNaN(hourlyRate)) {
-                console.warn('Invalid hourly rate for night shift calculation');
+            if (typeof hourlyRate !== 'number' || isNaN(hourlyRate) || hourlyRate <= 0) {
+                console.warn('Invalid hourly rate for night shift calculation:', hourlyRate, 'type:', typeof hourlyRate);
                 return 0;
             }
 
-            return Math.round(nightShiftHours * hourlyRate * this.nightShiftRate);
+            // Đảm bảo nightShiftRate là số hợp lệ
+            var nightShiftRate = typeof this.nightShiftRate === 'number' && !isNaN(this.nightShiftRate) ? this.nightShiftRate : 0.3;
+
+            // Tính toán với các bước riêng biệt để tránh lỗi Safari
+            var hoursMultiplied = nightShiftHours * hourlyRate;
+            if (isNaN(hoursMultiplied)) {
+                console.warn('Hours multiplication resulted in NaN:', nightShiftHours, '*', hourlyRate);
+                return 0;
+            }
+
+            var rateMultiplied = hoursMultiplied * nightShiftRate;
+            if (isNaN(rateMultiplied)) {
+                console.warn('Rate multiplication resulted in NaN:', hoursMultiplied, '*', nightShiftRate);
+                return 0;
+            }
+
+            var roundedResult = Math.round(rateMultiplied);
+            if (isNaN(roundedResult)) {
+                console.warn('Rounding resulted in NaN:', rateMultiplied);
+                return 0;
+            }
+
+            return roundedResult;
         } catch (error) {
             console.error('Error calculating night shift allowance:', error);
             return 0;
@@ -617,9 +696,9 @@ class SalaryCalculator {
 
     updateResults(data) {
         try {
-            // Helper function để format số an toàn
+            // Helper function để format số an toàn với validation nghiêm ngặt hơn
             var safeFormatNumber = function(num) {
-                if (isNaN(num) || num === null || num === undefined) {
+                if (typeof num !== 'number' || isNaN(num) || num === null || num === undefined) {
                     return '0';
                 }
                 return num.toLocaleString('vi-VN');
@@ -633,10 +712,17 @@ class SalaryCalculator {
                 if (data.overtimeDetails.length > 0) {
                     for (var i = 0; i < data.overtimeDetails.length; i++) {
                         var detail = data.overtimeDetails[i];
-                        var detailEl = document.createElement('div');
-                        detailEl.className = 'result-item';
-                        detailEl.innerHTML = '<span class="result-label">' + detail.type + ' (' + detail.hours + 'h):</span><span class="result-value">' + safeFormatNumber(detail.salary) + ' VNĐ</span>';
-                        overtimeDetailsEl.appendChild(detailEl);
+                        if (detail && typeof detail === 'object') {
+                            var detailEl = document.createElement('div');
+                            detailEl.className = 'result-item';
+
+                            var typeText = detail.type || 'Không xác định';
+                            var hoursText = typeof detail.hours === 'number' && !isNaN(detail.hours) ? detail.hours : 0;
+                            var salaryText = safeFormatNumber(detail.salary || 0);
+
+                            detailEl.innerHTML = '<span class="result-label">' + typeText + ' (' + hoursText + 'h):</span><span class="result-value">' + salaryText + ' VNĐ</span>';
+                            overtimeDetailsEl.appendChild(detailEl);
+                        }
                     }
                 } else {
                     overtimeDetailsEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-md); font-style: italic;">Không có giờ tăng ca</p>';
@@ -775,6 +861,24 @@ class SalaryCalculator {
                 workingDays: this.safeGetValue('workingDays', '26')
             };
 
+            // Validate data trước khi lưu
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    var value = data[key];
+                    if (value === null || value === undefined || value === '') {
+                        if (key.includes('Overtime') || key === 'nightShiftHours') {
+                            data[key] = 0;
+                        } else if (key === 'dependents' || key === 'workingDays') {
+                            data[key] = 0;
+                        } else if (key.includes('Insurance')) {
+                            data[key] = 0;
+                        } else {
+                            data[key] = 0;
+                        }
+                    }
+                }
+            }
+
             localStorage.setItem('salaryCalculatorData', JSON.stringify(data));
         } catch (error) {
             console.error('Error saving to localStorage:', error);
@@ -784,19 +888,44 @@ class SalaryCalculator {
     loadFromLocalStorage() {
         try {
             var savedData = localStorage.getItem('salaryCalculatorData');
-            if (savedData) {
+            if (savedData && typeof savedData === 'string') {
                 var data = JSON.parse(savedData);
 
-                for (var key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        var element = this.safeGetElement(key);
-                        if (element) {
-                            if (key.indexOf('Salary') !== -1 || key.indexOf('Income') !== -1 || key === 'unionFee') {
-                                // Format money fields properly
-                                var numericValue = parseInt(data[key].toString().replace(/[^\d]/g, '')) || 0;
-                                element.value = numericValue.toLocaleString('vi-VN');
-                            } else {
-                                element.value = data[key];
+                // Kiểm tra data hợp lệ
+                if (data && typeof data === 'object') {
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            var element = this.safeGetElement(key);
+                            if (element) {
+                                var value = data[key];
+
+                                if (key.indexOf('Salary') !== -1 || key.indexOf('Income') !== -1 || key === 'unionFee') {
+                                    // Format money fields properly với validation nghiêm ngặt
+                                    if (value !== null && value !== undefined && value !== '') {
+                                        var stringValue = String(value);
+                                        var numericString = stringValue.replace(/[^\d]/g, '');
+
+                                        if (numericString !== '') {
+                                            var numericValue = parseInt(numericString, 10);
+                                            if (!isNaN(numericValue) && numericValue >= 0) {
+                                                element.value = numericValue.toLocaleString('vi-VN');
+                                            } else {
+                                                element.value = '';
+                                            }
+                                        } else {
+                                            element.value = '';
+                                        }
+                                    } else {
+                                        element.value = '';
+                                    }
+                                } else {
+                                    // Các trường khác
+                                    if (value !== null && value !== undefined) {
+                                        element.value = String(value);
+                                    } else {
+                                        element.value = '';
+                                    }
+                                }
                             }
                         }
                     }
@@ -806,6 +935,7 @@ class SalaryCalculator {
             }
         } catch (error) {
             console.error('Error loading saved data:', error);
+            // Không hiển thị thông báo lỗi cho người dùng để tránh làm phiền
         }
     }
 
@@ -854,7 +984,7 @@ class SalaryCalculator {
                 return;
             }
 
-            // Get current form data
+            // Get current form data với validation nghiêm ngặt
             var formData = {
                 basicSalary: this.parseMoneyValue(this.safeGetValue('basicSalary', '0')),
                 allowance: this.parseMoneyValue(this.safeGetValue('allowance', '0')),
@@ -873,6 +1003,17 @@ class SalaryCalculator {
                 dependents: parseInt(this.safeGetValue('dependents', '0')),
                 workingDays: parseInt(this.safeGetValue('workingDays', '26'))
             };
+
+            // Validate formData trước khi mã hóa
+            for (var key in formData) {
+                if (formData.hasOwnProperty(key)) {
+                    var value = formData[key];
+                    if (typeof value !== 'number' || isNaN(value)) {
+                        console.warn('Invalid value for', key, ':', value, 'setting to 0');
+                        formData[key] = 0;
+                    }
+                }
+            }
 
             // Create data object with password
             var shareData = {
@@ -970,17 +1111,39 @@ class SalaryCalculator {
                 // Password correct, load shared data
                 var formData = JSON.parse(atob(this.sharedData.data));
 
-                // Fill form with shared data
+                // Fill form with shared data với validation nghiêm ngặt
                 for (var key in formData) {
                     if (formData.hasOwnProperty(key)) {
                         var element = this.safeGetElement(key);
                         if (element) {
+                            var value = formData[key];
+
                             if (key.indexOf('Salary') !== -1 || key.indexOf('Income') !== -1 || key === 'unionFee') {
-                                // Format money fields properly
-                                var numericValue = parseInt(formData[key].toString().replace(/[^\d]/g, '')) || 0;
-                                element.value = numericValue.toLocaleString('vi-VN');
+                                // Format money fields properly với validation nghiêm ngặt
+                                if (value !== null && value !== undefined && value !== '') {
+                                    var stringValue = String(value);
+                                    var numericString = stringValue.replace(/[^\d]/g, '');
+
+                                    if (numericString !== '') {
+                                        var numericValue = parseInt(numericString, 10);
+                                        if (!isNaN(numericValue) && numericValue >= 0) {
+                                            element.value = numericValue.toLocaleString('vi-VN');
+                                        } else {
+                                            element.value = '';
+                                        }
+                                    } else {
+                                        element.value = '';
+                                    }
+                                } else {
+                                    element.value = '';
+                                }
                             } else {
-                                element.value = formData[key];
+                                // Các trường khác
+                                if (value !== null && value !== undefined) {
+                                    element.value = String(value);
+                                } else {
+                                    element.value = '';
+                                }
                             }
                         }
                     }

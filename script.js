@@ -29,12 +29,49 @@ class SalaryCalculator {
         this.init();
     }
 
-    init() {
-        this.checkForSharedData();
-        this.loadFromLocalStorage();
-        this.setupEventListeners();
-        this.setupTheme();
-        this.formatMoneyInputs();
+    setupAdSense() {
+        // AdSense callback functions
+        window.adsbygoogle = window.adsbygoogle || [];
+        const adsbygoogle = window.adsbygoogle;
+
+        // Push ad with callback to handle loading state
+        adsbygoogle.push({
+            google_ad_client: "ca-pub-7587631210958149",
+            enable_page_level_ads: true
+        });
+
+        // Set up simple ad loading detection after a delay
+        setTimeout(() => {
+            this.checkAdLoading();
+        }, 2000);
+    }
+
+    checkAdLoading() {
+        const adContainers = document.querySelectorAll('.ad-container');
+
+        adContainers.forEach(container => {
+            // Check if the ad container has actual ad content (iframes, etc.)
+            const hasAdContent = container.querySelector('iframe') ||
+                               container.querySelector('[data-ad-status]') ||
+                               container.querySelector('.adsbygoogle');
+
+            if (hasAdContent) {
+                container.classList.add('ad-loaded');
+            } else {
+                // Check again after another delay
+                setTimeout(() => {
+                    const finalCheck = container.querySelector('iframe') ||
+                                    container.querySelector('[data-ad-status]') ||
+                                    container.querySelector('.adsbygoogle');
+
+                    if (finalCheck) {
+                        container.classList.add('ad-loaded');
+                    } else {
+                        container.style.display = 'none';
+                    }
+                }, 3000);
+            }
+        });
     }
 
     checkForSharedData() {
@@ -324,6 +361,11 @@ class SalaryCalculator {
 
             this.showNotification('Tính lương thành công!', 'success');
 
+            // Recheck ad loading after calculation
+            setTimeout(() => {
+                this.checkAdLoading();
+            }, 500);
+
         } catch (error) {
             console.error('Calculation error:', error);
             this.showNotification('Có lỗi xảy ra khi tính lương!', 'error');
@@ -376,6 +418,11 @@ class SalaryCalculator {
             behavior: 'smooth',
             block: 'start'
         });
+
+        // Recheck ad loading for better user experience
+        setTimeout(() => {
+            this.checkAdLoading();
+        }, 1000);
     }
 
     resetForm() {
@@ -403,6 +450,13 @@ class SalaryCalculator {
         // Hide results
         document.getElementById('resultsSection').style.display = 'none';
 
+        // Hide ad containers
+        const adContainers = document.querySelectorAll('.ad-container');
+        adContainers.forEach(container => {
+            container.classList.remove('ad-loaded');
+            container.style.display = 'none';
+        });
+
         this.saveToLocalStorage();
         this.formatMoneyInputs();
         this.showNotification('Đã khôi phục giá trị mặc định!', 'success');
@@ -410,10 +464,10 @@ class SalaryCalculator {
 
     saveToLocalStorage() {
         const data = {
-            basicSalary: document.getElementById('basicSalary').value,
-            allowance: document.getElementById('allowance').value,
+            basicSalary: this.parseMoneyValue(document.getElementById('basicSalary').value),
+            allowance: this.parseMoneyValue(document.getElementById('allowance').value),
             nightShiftHours: document.getElementById('nightShiftHours').value,
-            otherIncome: document.getElementById('otherIncome').value,
+            otherIncome: this.parseMoneyValue(document.getElementById('otherIncome').value),
             normalDayOvertime: document.getElementById('normalDayOvertime').value,
             normalNightOvertime: document.getElementById('normalNightOvertime').value,
             dayOffOvertime: document.getElementById('dayOffOvertime').value,
@@ -423,7 +477,7 @@ class SalaryCalculator {
             socialInsurance: document.getElementById('socialInsurance').value,
             healthInsurance: document.getElementById('healthInsurance').value,
             unemploymentInsurance: document.getElementById('unemploymentInsurance').value,
-            unionFee: document.getElementById('unionFee').value,
+            unionFee: this.parseMoneyValue(document.getElementById('unionFee').value),
             dependents: document.getElementById('dependents').value
         };
 
@@ -439,7 +493,13 @@ class SalaryCalculator {
                 Object.keys(data).forEach(key => {
                     const element = document.getElementById(key);
                     if (element) {
-                        element.value = data[key];
+                        if (key.includes('Salary') || key.includes('Income') || key === 'unionFee') {
+                            // Format money fields properly
+                            const numericValue = parseInt(data[key].replace(/[^\d]/g, '')) || 0;
+                            element.value = numericValue.toLocaleString('vi-VN');
+                        } else {
+                            element.value = data[key];
+                        }
                     }
                 });
 
@@ -554,7 +614,9 @@ class SalaryCalculator {
                 const element = document.getElementById(key);
                 if (element) {
                     if (key.includes('Salary') || key.includes('Income') || key === 'unionFee') {
-                        element.value = formData[key].toLocaleString('vi-VN');
+                        // Format money fields properly
+                        const numericValue = parseInt(formData[key].toString().replace(/[^\d]/g, '')) || 0;
+                        element.value = numericValue.toLocaleString('vi-VN');
                     } else {
                         element.value = formData[key];
                     }
@@ -574,6 +636,11 @@ class SalaryCalculator {
 
             this.showNotification('Đã mở khóa thành công!', 'success');
 
+            // Check ads after loading shared data
+            setTimeout(() => {
+                this.checkAdLoading();
+            }, 1500);
+
         } else {
             this.showNotification('Mật khẩu không đúng!', 'error');
             document.getElementById('sharePassword').value = '';
@@ -581,6 +648,13 @@ class SalaryCalculator {
     }
 
     goHome() {
+        // Hide ad containers when going home
+        const adContainers = document.querySelectorAll('.ad-container');
+        adContainers.forEach(container => {
+            container.classList.remove('ad-loaded');
+            container.style.display = 'none';
+        });
+
         // Redirect to clean URL
         window.location.href = window.location.pathname;
     }
@@ -604,4 +678,11 @@ function goHome() {
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     salaryCalculator = new SalaryCalculator();
+
+    // Setup AdSense after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        if (salaryCalculator && salaryCalculator.setupAdSense) {
+            salaryCalculator.setupAdSense();
+        }
+    }, 100);
 });

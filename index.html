@@ -864,21 +864,34 @@
             padding: var(--spacing-lg);
             box-shadow: var(--shadow-md);
             margin: var(--spacing-lg) 0;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, height 0.3s ease;
+        }
+
+        .ad-container.ad-loaded {
+            opacity: 1;
+            height: auto;
+            overflow: visible;
         }
 
         .ad-container.header-ad {
             margin: var(--spacing-xl) 0;
             padding: var(--spacing-md);
+            min-height: 90px;
         }
 
         .ad-container.results-ad {
             margin: var(--spacing-2xl) 0;
             padding: var(--spacing-xl);
+            min-height: 250px;
         }
 
         .ad-container.footer-ad {
             margin-top: var(--spacing-2xl);
             padding: var(--spacing-xl);
+            min-height: 280px;
         }
 
         /* Dark Theme Ads */
@@ -982,7 +995,7 @@
         </header>
 
         <!-- Header Ad Slot -->
-        <div class="ad-container header-ad" style="text-align: center; margin-bottom: var(--spacing-xl);">
+        <div class="ad-container header-ad" id="header-ad-container">
             <ins class="adsbygoogle"
                  style="display:block; min-height: 90px;"
                  data-ad-client="ca-pub-7587631210958149"
@@ -1218,7 +1231,7 @@
         </div>
 
         <!-- Results Ad Slot -->
-        <div class="ad-container results-ad" style="text-align: center; margin: var(--spacing-xl) 0;">
+        <div class="ad-container results-ad" id="results-ad-container">
             <ins class="adsbygoogle"
                  style="display:block; min-height: 250px;"
                  data-ad-client="ca-pub-7587631210958149"
@@ -1269,7 +1282,7 @@
     <div id="notification" class="notification"></div>
 
     <!-- Footer Ad Slot -->
-    <div class="ad-container footer-ad" style="text-align: center; margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color);">
+    <div class="ad-container footer-ad" id="footer-ad-container">
         <ins class="adsbygoogle"
              style="display:block; min-height: 280px;"
              data-ad-client="ca-pub-7587631210958149"

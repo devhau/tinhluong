@@ -1,4 +1,4 @@
-// Enhanced Salary Calculator with Vietnamese locale support and Safari compatibility
+// Tính lương thực nhận:
 class SalaryCalculator {
     constructor() {
         this.nightShiftRate = 0.3; // 30% phụ cấp đêm

@@ -1,4 +1,4 @@
-// Enhanced Salary Calculator with Vietnamese locale support
+// Enhanced Salary Calculator with Vietnamese locale support and Safari compatibility
 class SalaryCalculator {
     constructor() {
         this.nightShiftRate = 0.3; // 30% phụ cấp đêm
@@ -29,6 +29,40 @@ class SalaryCalculator {
         this.init();
     }
 
+    // Safari-compatible helper functions
+    safeGetElement(id) {
+        try {
+            return document.getElementById(id) || null;
+        } catch (e) {
+            console.warn('Error getting element:', id, e);
+            return null;
+        }
+    }
+
+    safeSetText(id, text) {
+        try {
+            var element = this.safeGetElement(id);
+            if (element) {
+                element.textContent = text;
+            } else {
+                console.warn('Element with id \'' + id + '\' not found');
+            }
+        } catch (e) {
+            console.warn('Error setting text for element:', id, e);
+        }
+    }
+
+    safeGetValue(id, defaultValue) {
+        try {
+            if (defaultValue === undefined) defaultValue = '';
+            var element = this.safeGetElement(id);
+            return element ? element.value : defaultValue;
+        } catch (e) {
+            console.warn('Error getting value for element:', id, e);
+            return defaultValue || '';
+        }
+    }
+
     init() {
         this.checkForSharedData();
         this.loadFromLocalStorage();
@@ -39,8 +73,10 @@ class SalaryCalculator {
 
     setupAdSense() {
         // AdSense callback functions
-        window.adsbygoogle = window.adsbygoogle || [];
-        const adsbygoogle = window.adsbygoogle;
+        if (typeof window.adsbygoogle === 'undefined') {
+            window.adsbygoogle = [];
+        }
+        var adsbygoogle = window.adsbygoogle;
 
         // Push ad with callback to handle loading state
         adsbygoogle.push({
@@ -49,53 +85,61 @@ class SalaryCalculator {
         });
 
         // Set up simple ad loading detection after a delay
-        setTimeout(() => {
-            this.checkAdLoading();
+        var self = this;
+        setTimeout(function() {
+            self.checkAdLoading();
         }, 2000);
     }
 
     checkAdLoading() {
-        const adContainers = document.querySelectorAll('.ad-container');
+        try {
+            var adContainers = document.querySelectorAll('.ad-container');
 
-        adContainers.forEach(container => {
-            // Check if the ad container has actual ad content (iframes, etc.)
-            const hasAdContent = container.querySelector('iframe') ||
-                               container.querySelector('[data-ad-status]') ||
-                               container.querySelector('.adsbygoogle');
+            for (var i = 0; i < adContainers.length; i++) {
+                var container = adContainers[i];
 
-            if (hasAdContent) {
-                container.classList.add('ad-loaded');
-            } else {
-                // Check again after another delay
-                setTimeout(() => {
-                    const finalCheck = container.querySelector('iframe') ||
-                                    container.querySelector('[data-ad-status]') ||
-                                    container.querySelector('.adsbygoogle');
+                // Check if the ad container has actual ad content (iframes, etc.)
+                var hasAdContent = container.querySelector('iframe') ||
+                                 container.querySelector('[data-ad-status]') ||
+                                 container.querySelector('.adsbygoogle');
 
-                    if (finalCheck) {
-                        container.classList.add('ad-loaded');
-                    } else {
-                        container.style.display = 'none';
-                    }
-                }, 3000);
+                if (hasAdContent) {
+                    container.classList.add('ad-loaded');
+                } else {
+                    // Check again after another delay
+                    var self = this;
+                    setTimeout(function() {
+                        var finalCheck = container.querySelector('iframe') ||
+                                       container.querySelector('[data-ad-status]') ||
+                                       container.querySelector('.adsbygoogle');
+
+                        if (finalCheck) {
+                            container.classList.add('ad-loaded');
+                        } else {
+                            container.style.display = 'none';
+                        }
+                    }, 3000);
+                }
             }
-        });
+        } catch (error) {
+            console.error('Error checking ad loading:', error);
+        }
     }
 
     checkForSharedData() {
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const shareParam = urlParams.get('share');
+            var urlParams = new URLSearchParams(window.location.search);
+            var shareParam = urlParams.get('share');
 
             if (shareParam) {
                 try {
-                    const shareData = JSON.parse(atob(shareParam));
+                    var shareData = JSON.parse(atob(shareParam));
                     this.showPasswordScreen(shareData);
                 } catch (error) {
                     console.error('Error processing shared data:', error);
                     this.showNotification('Link chia sẻ không hợp lệ!', 'error');
                     // Redirect to clean URL after 2 seconds
-                    setTimeout(() => {
+                    setTimeout(function() {
                         window.location.href = window.location.pathname;
                     }, 2000);
                 }
@@ -108,9 +152,9 @@ class SalaryCalculator {
     showPasswordScreen(shareData) {
         try {
             this.sharedData = shareData;
-            const passwordScreen = document.getElementById('passwordScreen');
-            const sharePassword = document.getElementById('sharePassword');
-            const appContainer = document.querySelector('.app-container');
+            var passwordScreen = this.safeGetElement('passwordScreen');
+            var sharePassword = this.safeGetElement('sharePassword');
+            var appContainer = document.querySelector('.app-container');
 
             if (passwordScreen) passwordScreen.classList.add('show');
             if (sharePassword) sharePassword.focus();
@@ -122,9 +166,9 @@ class SalaryCalculator {
 
     hidePasswordScreen() {
         try {
-            const passwordScreen = document.getElementById('passwordScreen');
-            const sharePassword = document.getElementById('sharePassword');
-            const appContainer = document.querySelector('.app-container');
+            var passwordScreen = this.safeGetElement('passwordScreen');
+            var sharePassword = this.safeGetElement('sharePassword');
+            var appContainer = document.querySelector('.app-container');
 
             if (passwordScreen) passwordScreen.classList.remove('show');
             if (sharePassword) sharePassword.value = '';
@@ -137,86 +181,86 @@ class SalaryCalculator {
     setupEventListeners() {
         try {
             // Calculate button
-            const calculateBtn = document.getElementById('calculateBtn');
+            var calculateBtn = this.safeGetElement('calculateBtn');
             if (calculateBtn) {
-                calculateBtn.addEventListener('click', () => {
+                calculateBtn.addEventListener('click', function() {
                     this.calculateSalary();
-                });
+                }.bind(this));
             }
 
             // Reset button
-            const resetBtn = document.getElementById('resetBtn');
+            var resetBtn = this.safeGetElement('resetBtn');
             if (resetBtn) {
-                resetBtn.addEventListener('click', () => {
+                resetBtn.addEventListener('click', function() {
                     this.resetForm();
-                });
+                }.bind(this));
             }
 
             // Share button
-            const shareBtn = document.getElementById('shareBtn');
+            var shareBtn = this.safeGetElement('shareBtn');
             if (shareBtn) {
-                shareBtn.addEventListener('click', () => {
+                shareBtn.addEventListener('click', function() {
                     this.showShareModal();
-                });
+                }.bind(this));
             }
 
             // Theme toggle
-            const themeToggle = document.getElementById('themeToggle');
+            var themeToggle = this.safeGetElement('themeToggle');
             if (themeToggle) {
-                themeToggle.addEventListener('click', () => {
+                themeToggle.addEventListener('click', function() {
                     this.toggleTheme();
-                });
+                }.bind(this));
             }
 
             // Modal events
-            const closeShareModal = document.getElementById('closeShareModal');
+            var closeShareModal = this.safeGetElement('closeShareModal');
             if (closeShareModal) {
-                closeShareModal.addEventListener('click', () => {
+                closeShareModal.addEventListener('click', function() {
                     this.hideShareModal();
-                });
+                }.bind(this));
             }
 
-            const generateShareLinkBtn = document.getElementById('generateShareLinkBtn');
+            var generateShareLinkBtn = this.safeGetElement('generateShareLinkBtn');
             if (generateShareLinkBtn) {
-                generateShareLinkBtn.addEventListener('click', () => {
+                generateShareLinkBtn.addEventListener('click', function() {
                     this.generateShareLink();
-                });
+                }.bind(this));
             }
 
-            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            var copyLinkBtn = this.safeGetElement('copyLinkBtn');
             if (copyLinkBtn) {
-                copyLinkBtn.addEventListener('click', () => {
+                copyLinkBtn.addEventListener('click', function() {
                     this.copyShareLink();
-                });
+                }.bind(this));
             }
 
             // Auto-save on input change
-            const inputs = document.querySelectorAll('.form-input');
-            inputs.forEach(input => {
-                input.addEventListener('input', () => {
+            var inputs = document.querySelectorAll('.form-input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('input', function() {
                     this.saveToLocalStorage();
                     this.formatMoneyInputs();
-                });
-            });
+                }.bind(this));
+            }
 
             // Close modal when clicking outside
-            const shareModal = document.getElementById('shareModal');
+            var shareModal = this.safeGetElement('shareModal');
             if (shareModal) {
-                shareModal.addEventListener('click', (e) => {
+                shareModal.addEventListener('click', function(e) {
                     if (e.target === shareModal) {
                         this.hideShareModal();
                     }
-                });
+                }.bind(this));
             }
 
             // Password screen events
-            const sharePassword = document.getElementById('sharePassword');
+            var sharePassword = this.safeGetElement('sharePassword');
             if (sharePassword) {
-                sharePassword.addEventListener('keypress', (e) => {
+                sharePassword.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         this.unlockSharedData();
                     }
-                });
+                }.bind(this));
             }
         } catch (error) {
             console.error('Error setting up event listeners:', error);
@@ -225,8 +269,8 @@ class SalaryCalculator {
 
     setupTheme() {
         try {
-            const savedTheme = localStorage.getItem('salaryCalculatorTheme') || 'light';
-            const themeToggle = document.getElementById('themeToggle');
+            var savedTheme = localStorage.getItem('salaryCalculatorTheme') || 'light';
+            var themeToggle = this.safeGetElement('themeToggle');
 
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-theme');
@@ -239,12 +283,12 @@ class SalaryCalculator {
 
     toggleTheme() {
         try {
-            const isDark = document.body.classList.toggle('dark-theme');
+            var isDark = document.body.classList.toggle('dark-theme');
             localStorage.setItem('salaryCalculatorTheme', isDark ? 'dark' : 'light');
 
-            const themeToggle = document.getElementById('themeToggle');
+            var themeToggle = this.safeGetElement('themeToggle');
             if (themeToggle) {
-                const themeIcon = themeToggle.querySelector('i');
+                var themeIcon = themeToggle.querySelector('i');
                 if (themeIcon) {
                     themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
                 }
@@ -255,16 +299,21 @@ class SalaryCalculator {
     }
 
     formatMoneyInputs() {
-        const moneyInputs = document.querySelectorAll('.form-input[type="text"]');
-        moneyInputs.forEach(input => {
-            if (input.id === 'basicSalary' || input.id === 'allowance' || input.id === 'otherIncome' || input.id === 'unionFee') {
-                let value = input.value.replace(/[^\d]/g, '');
-                if (value) {
-                    value = parseInt(value).toLocaleString('vi-VN');
-                    input.value = value;
+        try {
+            var moneyInputs = document.querySelectorAll('.form-input[type="text"]');
+            for (var i = 0; i < moneyInputs.length; i++) {
+                var input = moneyInputs[i];
+                if (input.id === 'basicSalary' || input.id === 'allowance' || input.id === 'otherIncome' || input.id === 'unionFee') {
+                    var value = input.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        value = parseInt(value).toLocaleString('vi-VN');
+                        input.value = value;
+                    }
                 }
             }
-        });
+        } catch (error) {
+            console.error('Error formatting money inputs:', error);
+        }
     }
 
     parseMoneyValue(value) {
@@ -272,43 +321,47 @@ class SalaryCalculator {
     }
 
     calculateHourlyRate(basicSalary) {
-        // Tính tiền 1 giờ làm việc: Lương cơ bản / 26 ngày / 8 giờ
-        return Math.round(basicSalary / this.workingDays / 8);
+        // Tính tiền 1 giờ làm việc: Lương cơ bản / số ngày làm việc / 8 giờ
+        var workingDays = parseInt(this.safeGetValue('workingDays', '26')) || 26;
+        return Math.round(basicSalary / workingDays / 8);
     }
 
     calculateOvertimeSalary() {
         try {
-            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
-            const hourlyRate = this.calculateHourlyRate(basicSalary);
+            var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
+            var hourlyRate = this.calculateHourlyRate(basicSalary);
 
-            const overtimeHours = {
-                normalDay: parseFloat(document.getElementById('normalDayOvertime')?.value) || 0,
-                normalNight: parseFloat(document.getElementById('normalNightOvertime')?.value) || 0,
-                dayOff: parseFloat(document.getElementById('dayOffOvertime')?.value) || 0,
-                nightDayOff: parseFloat(document.getElementById('nightDayOffOvertime')?.value) || 0,
-                holiday: parseFloat(document.getElementById('holidayOvertime')?.value) || 0,
-                nightHoliday: parseFloat(document.getElementById('nightHolidayOvertime')?.value) || 0
+            var overtimeHours = {
+                normalDay: parseFloat(this.safeGetValue('normalDayOvertime', '0')),
+                normalNight: parseFloat(this.safeGetValue('normalNightOvertime', '0')),
+                dayOff: parseFloat(this.safeGetValue('dayOffOvertime', '0')),
+                nightDayOff: parseFloat(this.safeGetValue('nightDayOffOvertime', '0')),
+                holiday: parseFloat(this.safeGetValue('holidayOvertime', '0')),
+                nightHoliday: parseFloat(this.safeGetValue('nightHolidayOvertime', '0'))
             };
 
-            let totalOvertimeSalary = 0;
-            const overtimeDetails = [];
+            var totalOvertimeSalary = 0;
+            var overtimeDetails = [];
 
-            for (const [type, hours] of Object.entries(overtimeHours)) {
-                if (hours > 0) {
-                    const rate = this.overtimeRates[type];
-                    const salary = Math.round(hours * hourlyRate * rate);
-                    totalOvertimeSalary += salary;
+            for (var type in overtimeHours) {
+                if (overtimeHours.hasOwnProperty(type)) {
+                    var hours = overtimeHours[type];
+                    if (hours > 0) {
+                        var rate = this.overtimeRates[type];
+                        var salary = Math.round(hours * hourlyRate * rate);
+                        totalOvertimeSalary += salary;
 
-                    overtimeDetails.push({
-                        type: this.getOvertimeTypeName(type),
-                        hours: hours,
-                        rate: rate,
-                        salary: salary
-                    });
+                        overtimeDetails.push({
+                            type: this.getOvertimeTypeName(type),
+                            hours: hours,
+                            rate: rate,
+                            salary: salary
+                        });
+                    }
                 }
             }
 
-            return { totalOvertimeSalary, overtimeDetails };
+            return { totalOvertimeSalary: totalOvertimeSalary, overtimeDetails: overtimeDetails };
         } catch (error) {
             console.error('Error calculating overtime salary:', error);
             return { totalOvertimeSalary: 0, overtimeDetails: [] };
@@ -329,9 +382,9 @@ class SalaryCalculator {
 
     calculateNightShiftAllowance() {
         try {
-            const nightShiftHours = parseFloat(document.getElementById('nightShiftHours')?.value) || 0;
-            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
-            const hourlyRate = this.calculateHourlyRate(basicSalary);
+            var nightShiftHours = parseFloat(this.safeGetValue('nightShiftHours', '0'));
+            var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
+            var hourlyRate = this.calculateHourlyRate(basicSalary);
 
             return Math.round(nightShiftHours * hourlyRate * this.nightShiftRate);
         } catch (error) {
@@ -342,32 +395,32 @@ class SalaryCalculator {
 
     calculateInsurance() {
         try {
-            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
-            const allowance = this.parseMoneyValue(document.getElementById('allowance')?.value || '0');
+            var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
+            var allowance = this.parseMoneyValue(this.safeGetValue('allowance', '0'));
 
             // Bảo hiểm tính trên tổng lương cơ bản + phụ cấp
-            const insuranceBase = basicSalary + allowance;
+            var insuranceBase = basicSalary + allowance;
 
-            const socialInsuranceRate = parseFloat(document.getElementById('socialInsurance')?.value) / 100 || 0.08;
-            const healthInsuranceRate = parseFloat(document.getElementById('healthInsurance')?.value) / 100 || 0.015;
-            const unemploymentInsuranceRate = parseFloat(document.getElementById('unemploymentInsurance')?.value) / 100 || 0.01;
+            var socialInsuranceRate = parseFloat(this.safeGetValue('socialInsurance', '8')) / 100 || 0.08;
+            var healthInsuranceRate = parseFloat(this.safeGetValue('healthInsurance', '1.5')) / 100 || 0.015;
+            var unemploymentInsuranceRate = parseFloat(this.safeGetValue('unemploymentInsurance', '1')) / 100 || 0.01;
 
             // Công đoàn cố định 40.000 VNĐ
-            const unionFeeAmount = this.parseMoneyValue(document.getElementById('unionFee')?.value) || 40000;
+            var unionFeeAmount = this.parseMoneyValue(this.safeGetValue('unionFee', '40000'));
 
-            const socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
-            const healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
-            const unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
-            const totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
-            const totalDeductions = totalInsurance + unionFeeAmount;
+            var socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
+            var healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
+            var unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
+            var totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
+            var totalDeductions = totalInsurance + unionFeeAmount;
 
             return {
-                socialInsAmount,
-                healthInsAmount,
-                unemploymentInsAmount,
-                unionFeeAmount,
-                totalInsurance,
-                totalDeductions
+                socialInsAmount: socialInsAmount,
+                healthInsAmount: healthInsAmount,
+                unemploymentInsAmount: unemploymentInsAmount,
+                unionFeeAmount: unionFeeAmount,
+                totalInsurance: totalInsurance,
+                totalDeductions: totalDeductions
             };
         } catch (error) {
             console.error('Error calculating insurance:', error);
@@ -385,25 +438,26 @@ class SalaryCalculator {
     calculateTax(taxableIncome) {
         try {
             // Áp dụng mức khởi điểm 11.4 triệu VNĐ và giảm trừ gia cảnh theo Luật Thuế TNCN mới nhất (2024)
-            const taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
+            var taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
 
             // Lấy số người phụ thuộc
-            const dependents = parseInt(document.getElementById('dependents')?.value) || 0;
+            var dependents = parseInt(this.safeGetValue('dependents', '0'));
 
             // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
-            const familyDeduction = taxFreeThreshold + (dependents * 4400000);
+            var familyDeduction = taxFreeThreshold + (dependents * 4400000);
 
             // Thu nhập chịu thuế thực tế (sau khi trừ giảm trừ gia cảnh)
-            const actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
+            var actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
 
-            let tax = 0;
-            let remainingIncome = actualTaxableIncome;
+            var tax = 0;
+            var remainingIncome = actualTaxableIncome;
 
             // Áp dụng biểu thuế lũy tiến từng phần
-            for (const bracket of this.taxBrackets) {
+            for (var i = 0; i < this.taxBrackets.length; i++) {
+                var bracket = this.taxBrackets[i];
                 if (remainingIncome <= 0) break;
 
-                const taxableInBracket = Math.min(remainingIncome, bracket.max - bracket.min);
+                var taxableInBracket = Math.min(remainingIncome, bracket.max - bracket.min);
                 tax += taxableInBracket * bracket.rate;
                 remainingIncome -= taxableInBracket;
             }
@@ -428,46 +482,49 @@ class SalaryCalculator {
     calculateSalary() {
         try {
             // Get basic inputs
-            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
-            const allowance = this.parseMoneyValue(document.getElementById('allowance')?.value || '0');
-            const otherIncome = this.parseMoneyValue(document.getElementById('otherIncome')?.value || '0');
+            var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
+            var allowance = this.parseMoneyValue(this.safeGetValue('allowance', '0'));
+            var otherIncome = this.parseMoneyValue(this.safeGetValue('otherIncome', '0'));
 
             // Calculate components
-            const basicTotal = basicSalary + allowance;
-            const nightAllowance = this.calculateNightShiftAllowance();
-            const { totalOvertimeSalary, overtimeDetails } = this.calculateOvertimeSalary();
-            const insurance = this.calculateInsurance();
+            var basicTotal = basicSalary + allowance;
+            var nightAllowance = this.calculateNightShiftAllowance();
+            var overtimeResult = this.calculateOvertimeSalary();
+            var totalOvertimeSalary = overtimeResult.totalOvertimeSalary;
+            var overtimeDetails = overtimeResult.overtimeDetails;
+            var insurance = this.calculateInsurance();
 
             // Gross salary (before tax)
-            const grossSalary = basicTotal + nightAllowance + totalOvertimeSalary + otherIncome;
+            var grossSalary = basicTotal + nightAllowance + totalOvertimeSalary + otherIncome;
 
             // Taxable income (gross salary - insurance deductions)
-            const taxableIncome = grossSalary - insurance.totalInsurance;
+            var taxableIncome = grossSalary - insurance.totalInsurance;
 
             // Calculate tax with family deduction
-            const taxResult = this.calculateTax(taxableIncome);
+            var taxResult = this.calculateTax(taxableIncome);
 
             // Net salary (after tax and all deductions)
-            const netSalary = grossSalary - taxResult.tax - insurance.totalDeductions;
+            var netSalary = grossSalary - taxResult.tax - insurance.totalDeductions;
 
             // Update UI
             this.updateResults({
-                basicTotal,
-                nightAllowance,
-                totalOvertimeSalary,
-                grossSalary,
-                taxableIncome,
-                taxResult,
-                netSalary,
-                overtimeDetails,
-                insurance
+                basicTotal: basicTotal,
+                nightAllowance: nightAllowance,
+                totalOvertimeSalary: totalOvertimeSalary,
+                grossSalary: grossSalary,
+                taxableIncome: taxableIncome,
+                taxResult: taxResult,
+                netSalary: netSalary,
+                overtimeDetails: overtimeDetails,
+                insurance: insurance
             });
 
             this.showNotification('Tính lương thành công!', 'success');
 
             // Recheck ad loading after calculation
-            setTimeout(() => {
-                this.checkAdLoading();
+            var self = this;
+            setTimeout(function() {
+                self.checkAdLoading();
             }, 500);
 
         } catch (error) {
@@ -478,61 +535,45 @@ class SalaryCalculator {
 
     updateResults(data) {
         try {
-            // Safe DOM element access helper
-            const safeGetElement = (id) => {
-                return document.getElementById(id);
-            };
-
-            const safeSetText = (id, text) => {
-                const element = safeGetElement(id);
-                if (element) {
-                    element.textContent = text;
-                } else {
-                    console.warn(`Element with id '${id}' not found`);
-                }
-            };
-
             // Update overtime details
-            const overtimeDetailsEl = safeGetElement('overtimeDetails');
+            var overtimeDetailsEl = this.safeGetElement('overtimeDetails');
             if (overtimeDetailsEl) {
                 overtimeDetailsEl.innerHTML = '';
 
                 if (data.overtimeDetails.length > 0) {
-                    data.overtimeDetails.forEach(detail => {
-                        const detailEl = document.createElement('div');
+                    for (var i = 0; i < data.overtimeDetails.length; i++) {
+                        var detail = data.overtimeDetails[i];
+                        var detailEl = document.createElement('div');
                         detailEl.className = 'result-item';
-                        detailEl.innerHTML = `
-                            <span class="result-label">${detail.type} (${detail.hours}h):</span>
-                            <span class="result-value">${detail.salary.toLocaleString('vi-VN')} VNĐ</span>
-                        `;
+                        detailEl.innerHTML = '<span class="result-label">' + detail.type + ' (' + detail.hours + 'h):</span><span class="result-value">' + detail.salary.toLocaleString('vi-VN') + ' VNĐ</span>';
                         overtimeDetailsEl.appendChild(detailEl);
-                    });
+                    }
                 } else {
                     overtimeDetailsEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-md); font-style: italic;">Không có giờ tăng ca</p>';
                 }
             }
 
             // Update summary
-            safeSetText('basicTotal', `${data.basicTotal.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('nightAllowance', `${data.nightAllowance.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('totalOvertime', `${data.totalOvertimeSalary.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('grossSalary', `${data.grossSalary.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('totalDeductionsDisplay', `${data.insurance.totalDeductions.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('taxableSalary', `${data.taxResult.actualTaxableIncome.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('familyDeduction', `${data.taxResult.familyDeduction.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('dependentsCount', `${data.taxResult.dependents} người`);
-            safeSetText('incomeTax', `${data.taxResult.tax.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('netSalary', `${data.netSalary.toLocaleString('vi-VN')} VNĐ`);
+            this.safeSetText('basicTotal', data.basicTotal.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('nightAllowance', data.nightAllowance.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('totalOvertime', data.totalOvertimeSalary.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('grossSalary', data.grossSalary.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('totalDeductionsDisplay', data.insurance.totalDeductions.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('taxableSalary', data.taxResult.actualTaxableIncome.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('familyDeduction', data.taxResult.familyDeduction.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('dependentsCount', data.taxResult.dependents + ' người');
+            this.safeSetText('incomeTax', data.taxResult.tax.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('netSalary', data.netSalary.toLocaleString('vi-VN') + ' VNĐ');
 
             // Update insurance details
-            safeSetText('socialInsAmount', `${data.insurance.socialInsAmount.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('healthInsAmount', `${data.insurance.healthInsAmount.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('unemploymentInsAmount', `${data.insurance.unemploymentInsAmount.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('unionFeeAmount', `${data.insurance.unionFeeAmount.toLocaleString('vi-VN')} VNĐ`);
-            safeSetText('totalDeductions', `${data.insurance.totalDeductions.toLocaleString('vi-VN')} VNĐ`);
+            this.safeSetText('socialInsAmount', data.insurance.socialInsAmount.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('healthInsAmount', data.insurance.healthInsAmount.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('unemploymentInsAmount', data.insurance.unemploymentInsAmount.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('unionFeeAmount', data.insurance.unionFeeAmount.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('totalDeductions', data.insurance.totalDeductions.toLocaleString('vi-VN') + ' VNĐ');
 
             // Show results section
-            const resultsSection = safeGetElement('resultsSection');
+            var resultsSection = this.safeGetElement('resultsSection');
             if (resultsSection) {
                 resultsSection.style.display = 'block';
 
@@ -544,9 +585,9 @@ class SalaryCalculator {
             }
 
             // Recheck ad loading for better user experience
-            setTimeout(() => {
+            setTimeout(function() {
                 this.checkAdLoading();
-            }, 1000);
+            }.bind(this), 1000);
 
         } catch (error) {
             console.error('Error in updateResults:', error);
@@ -557,16 +598,17 @@ class SalaryCalculator {
     resetForm() {
         try {
             // Reset to default values
-            const elements = [
+            var elements = [
                 'basicSalary', 'allowance', 'nightShiftHours', 'otherIncome',
                 'normalDayOvertime', 'normalNightOvertime', 'dayOffOvertime',
                 'nightDayOffOvertime', 'holidayOvertime', 'nightHolidayOvertime',
                 'socialInsurance', 'healthInsurance', 'unemploymentInsurance',
-                'unionFee', 'dependents'
+                'unionFee', 'dependents', 'workingDays'
             ];
 
-            elements.forEach(id => {
-                const element = document.getElementById(id);
+            for (var i = 0; i < elements.length; i++) {
+                var id = elements[i];
+                var element = this.safeGetElement(id);
                 if (element) {
                     switch(id) {
                         case 'basicSalary':
@@ -590,24 +632,28 @@ class SalaryCalculator {
                         case 'dependents':
                             element.value = '0';
                             break;
+                        case 'workingDays':
+                            element.value = '26';
+                            break;
                         default:
                             element.value = '';
                     }
                 }
-            });
+            }
 
             // Hide results
-            const resultsSection = document.getElementById('resultsSection');
+            var resultsSection = this.safeGetElement('resultsSection');
             if (resultsSection) {
                 resultsSection.style.display = 'none';
             }
 
             // Hide ad containers
-            const adContainers = document.querySelectorAll('.ad-container');
-            adContainers.forEach(container => {
+            var adContainers = document.querySelectorAll('.ad-container');
+            for (var j = 0; j < adContainers.length; j++) {
+                var container = adContainers[j];
                 container.classList.remove('ad-loaded');
                 container.style.display = 'none';
-            });
+            }
 
             this.saveToLocalStorage();
             this.formatMoneyInputs();
@@ -620,22 +666,23 @@ class SalaryCalculator {
 
     saveToLocalStorage() {
         try {
-            const data = {
-                basicSalary: this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0'),
-                allowance: this.parseMoneyValue(document.getElementById('allowance')?.value || '0'),
-                nightShiftHours: document.getElementById('nightShiftHours')?.value || '',
-                otherIncome: this.parseMoneyValue(document.getElementById('otherIncome')?.value || '0'),
-                normalDayOvertime: document.getElementById('normalDayOvertime')?.value || '',
-                normalNightOvertime: document.getElementById('normalNightOvertime')?.value || '',
-                dayOffOvertime: document.getElementById('dayOffOvertime')?.value || '',
-                nightDayOffOvertime: document.getElementById('nightDayOffOvertime')?.value || '',
-                holidayOvertime: document.getElementById('holidayOvertime')?.value || '',
-                nightHolidayOvertime: document.getElementById('nightHolidayOvertime')?.value || '',
-                socialInsurance: document.getElementById('socialInsurance')?.value || '8',
-                healthInsurance: document.getElementById('healthInsurance')?.value || '1.5',
-                unemploymentInsurance: document.getElementById('unemploymentInsurance')?.value || '1',
-                unionFee: this.parseMoneyValue(document.getElementById('unionFee')?.value || '40000'),
-                dependents: document.getElementById('dependents')?.value || '0'
+            var data = {
+                basicSalary: this.parseMoneyValue(this.safeGetValue('basicSalary', '0')),
+                allowance: this.parseMoneyValue(this.safeGetValue('allowance', '0')),
+                nightShiftHours: this.safeGetValue('nightShiftHours', ''),
+                otherIncome: this.parseMoneyValue(this.safeGetValue('otherIncome', '0')),
+                normalDayOvertime: this.safeGetValue('normalDayOvertime', ''),
+                normalNightOvertime: this.safeGetValue('normalNightOvertime', ''),
+                dayOffOvertime: this.safeGetValue('dayOffOvertime', ''),
+                nightDayOffOvertime: this.safeGetValue('nightDayOffOvertime', ''),
+                holidayOvertime: this.safeGetValue('holidayOvertime', ''),
+                nightHolidayOvertime: this.safeGetValue('nightHolidayOvertime', ''),
+                socialInsurance: this.safeGetValue('socialInsurance', '8'),
+                healthInsurance: this.safeGetValue('healthInsurance', '1.5'),
+                unemploymentInsurance: this.safeGetValue('unemploymentInsurance', '1'),
+                unionFee: this.parseMoneyValue(this.safeGetValue('unionFee', '40000')),
+                dependents: this.safeGetValue('dependents', '0'),
+                workingDays: this.safeGetValue('workingDays', '26')
             };
 
             localStorage.setItem('salaryCalculatorData', JSON.stringify(data));
@@ -646,22 +693,24 @@ class SalaryCalculator {
 
     loadFromLocalStorage() {
         try {
-            const savedData = localStorage.getItem('salaryCalculatorData');
+            var savedData = localStorage.getItem('salaryCalculatorData');
             if (savedData) {
-                const data = JSON.parse(savedData);
+                var data = JSON.parse(savedData);
 
-                Object.keys(data).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        if (key.includes('Salary') || key.includes('Income') || key === 'unionFee') {
-                            // Format money fields properly
-                            const numericValue = parseInt(data[key].replace(/[^\d]/g, '')) || 0;
-                            element.value = numericValue.toLocaleString('vi-VN');
-                        } else {
-                            element.value = data[key];
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        var element = this.safeGetElement(key);
+                        if (element) {
+                            if (key.indexOf('Salary') !== -1 || key.indexOf('Income') !== -1 || key === 'unionFee') {
+                                // Format money fields properly
+                                var numericValue = parseInt(data[key].toString().replace(/[^\d]/g, '')) || 0;
+                                element.value = numericValue.toLocaleString('vi-VN');
+                            } else {
+                                element.value = data[key];
+                            }
                         }
                     }
-                });
+                }
 
                 this.formatMoneyInputs();
             }
@@ -700,49 +749,50 @@ class SalaryCalculator {
 
     generateShareLink() {
         try {
-            const modalPassword = document.getElementById('modalPassword');
-            const shareLink = document.getElementById('shareLink');
-            const linkSection = document.getElementById('linkSection');
+            var modalPassword = this.safeGetElement('modalPassword');
+            var shareLink = this.safeGetElement('shareLink');
+            var linkSection = this.safeGetElement('linkSection');
 
             if (!modalPassword) {
                 this.showNotification('Không tìm thấy element mật khẩu!', 'error');
                 return;
             }
 
-            const password = modalPassword.value.trim();
+            var password = modalPassword.value.trim();
             if (!password) {
                 this.showNotification('Vui lòng nhập mật khẩu!', 'error');
                 return;
             }
 
             // Get current form data
-            const formData = {
-                basicSalary: this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0'),
-                allowance: this.parseMoneyValue(document.getElementById('allowance')?.value || '0'),
-                nightShiftHours: parseFloat(document.getElementById('nightShiftHours')?.value) || 0,
-                otherIncome: this.parseMoneyValue(document.getElementById('otherIncome')?.value || '0'),
-                normalDayOvertime: parseFloat(document.getElementById('normalDayOvertime')?.value) || 0,
-                normalNightOvertime: parseFloat(document.getElementById('normalNightOvertime')?.value) || 0,
-                dayOffOvertime: parseFloat(document.getElementById('dayOffOvertime')?.value) || 0,
-                nightDayOffOvertime: parseFloat(document.getElementById('nightDayOffOvertime')?.value) || 0,
-                holidayOvertime: parseFloat(document.getElementById('holidayOvertime')?.value) || 0,
-                nightHolidayOvertime: parseFloat(document.getElementById('nightHolidayOvertime')?.value) || 0,
-                socialInsurance: parseFloat(document.getElementById('socialInsurance')?.value) || 8,
-                healthInsurance: parseFloat(document.getElementById('healthInsurance')?.value) || 1.5,
-                unemploymentInsurance: parseFloat(document.getElementById('unemploymentInsurance')?.value) || 1,
-                unionFee: this.parseMoneyValue(document.getElementById('unionFee')?.value || '40000'),
-                dependents: parseInt(document.getElementById('dependents')?.value) || 0
+            var formData = {
+                basicSalary: this.parseMoneyValue(this.safeGetValue('basicSalary', '0')),
+                allowance: this.parseMoneyValue(this.safeGetValue('allowance', '0')),
+                nightShiftHours: parseFloat(this.safeGetValue('nightShiftHours', '0')),
+                otherIncome: this.parseMoneyValue(this.safeGetValue('otherIncome', '0')),
+                normalDayOvertime: parseFloat(this.safeGetValue('normalDayOvertime', '0')),
+                normalNightOvertime: parseFloat(this.safeGetValue('normalNightOvertime', '0')),
+                dayOffOvertime: parseFloat(this.safeGetValue('dayOffOvertime', '0')),
+                nightDayOffOvertime: parseFloat(this.safeGetValue('nightDayOffOvertime', '0')),
+                holidayOvertime: parseFloat(this.safeGetValue('holidayOvertime', '0')),
+                nightHolidayOvertime: parseFloat(this.safeGetValue('nightHolidayOvertime', '0')),
+                socialInsurance: parseFloat(this.safeGetValue('socialInsurance', '8')),
+                healthInsurance: parseFloat(this.safeGetValue('healthInsurance', '1.5')),
+                unemploymentInsurance: parseFloat(this.safeGetValue('unemploymentInsurance', '1')),
+                unionFee: this.parseMoneyValue(this.safeGetValue('unionFee', '40000')),
+                dependents: parseInt(this.safeGetValue('dependents', '0')),
+                workingDays: parseInt(this.safeGetValue('workingDays', '26'))
             };
 
             // Create data object with password
-            const shareData = {
+            var shareData = {
                 password: btoa(password), // Base64 encode password
                 data: btoa(JSON.stringify(formData)), // Base64 encode form data
                 timestamp: Date.now()
             };
 
             // Generate share URL
-            const shareUrl = `${window.location.origin}${window.location.pathname}?share=${btoa(JSON.stringify(shareData))}`;
+            var shareUrl = window.location.origin + window.location.pathname + '?share=' + btoa(JSON.stringify(shareData));
 
             if (shareLink) shareLink.value = shareUrl;
             if (linkSection) linkSection.style.display = 'block';
@@ -757,7 +807,7 @@ class SalaryCalculator {
 
     copyShareLink() {
         try {
-            const shareLinkInput = document.getElementById('shareLink');
+            var shareLinkInput = this.safeGetElement('shareLink');
             if (!shareLinkInput) {
                 this.showNotification('Không tìm thấy element link!', 'error');
                 return;
@@ -771,11 +821,15 @@ class SalaryCalculator {
                 this.showNotification('Đã sao chép link!', 'success');
             } catch (error) {
                 // Fallback for modern browsers
-                navigator.clipboard.writeText(shareLinkInput.value).then(() => {
-                    this.showNotification('Đã sao chép link!', 'success');
-                }).catch(() => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareLinkInput.value).then(function() {
+                        this.showNotification('Đã sao chép link!', 'success');
+                    }.bind(this)).catch(function() {
+                        this.showNotification('Không thể sao chép link!', 'error');
+                    }.bind(this));
+                } else {
                     this.showNotification('Không thể sao chép link!', 'error');
-                });
+                }
             }
         } catch (error) {
             console.error('Error copying share link:', error);
@@ -783,17 +837,20 @@ class SalaryCalculator {
         }
     }
 
-    showNotification(message, type = 'info') {
+    showNotification(message, type) {
         try {
-            const notification = document.getElementById('notification');
+            if (type === undefined) type = 'info';
+            var notification = this.safeGetElement('notification');
             if (notification) {
                 notification.textContent = message;
-                notification.className = `notification show ${type}`;
+                notification.className = 'notification show ' + type;
 
                 // Auto-hide after 3 seconds
-                setTimeout(() => {
-                    if (notification) {
-                        notification.classList.remove('show');
+                var self = this;
+                setTimeout(function() {
+                    var notif = self.safeGetElement('notification');
+                    if (notif) {
+                        notif.classList.remove('show');
                     }
                 }, 3000);
             } else {
@@ -807,13 +864,13 @@ class SalaryCalculator {
     // Password protection functions
     unlockSharedData() {
         try {
-            const sharePassword = document.getElementById('sharePassword');
+            var sharePassword = this.safeGetElement('sharePassword');
             if (!sharePassword) {
                 this.showNotification('Không tìm thấy element mật khẩu!', 'error');
                 return;
             }
 
-            const password = sharePassword.value.trim();
+            var password = sharePassword.value.trim();
             if (!password) {
                 this.showNotification('Vui lòng nhập mật khẩu!', 'error');
                 return;
@@ -821,21 +878,23 @@ class SalaryCalculator {
 
             if (btoa(password) === this.sharedData.password) {
                 // Password correct, load shared data
-                const formData = JSON.parse(atob(this.sharedData.data));
+                var formData = JSON.parse(atob(this.sharedData.data));
 
                 // Fill form with shared data
-                Object.keys(formData).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        if (key.includes('Salary') || key.includes('Income') || key === 'unionFee') {
-                            // Format money fields properly
-                            const numericValue = parseInt(formData[key].toString().replace(/[^\d]/g, '')) || 0;
-                            element.value = numericValue.toLocaleString('vi-VN');
-                        } else {
-                            element.value = formData[key];
+                for (var key in formData) {
+                    if (formData.hasOwnProperty(key)) {
+                        var element = this.safeGetElement(key);
+                        if (element) {
+                            if (key.indexOf('Salary') !== -1 || key.indexOf('Income') !== -1 || key === 'unionFee') {
+                                // Format money fields properly
+                                var numericValue = parseInt(formData[key].toString().replace(/[^\d]/g, '')) || 0;
+                                element.value = numericValue.toLocaleString('vi-VN');
+                            } else {
+                                element.value = formData[key];
+                            }
                         }
                     }
-                });
+                }
 
                 // Hide password screen and show calculator
                 this.hidePasswordScreen();
@@ -844,15 +903,16 @@ class SalaryCalculator {
                 this.calculateSalary();
 
                 // Remove share parameter from URL
-                const url = new URL(window.location);
+                var url = new URL(window.location);
                 url.searchParams.delete('share');
                 window.history.replaceState({}, '', url);
 
                 this.showNotification('Đã mở khóa thành công!', 'success');
 
                 // Check ads after loading shared data
-                setTimeout(() => {
-                    this.checkAdLoading();
+                var self = this;
+                setTimeout(function() {
+                    self.checkAdLoading();
                 }, 1500);
 
             } else {
@@ -867,11 +927,16 @@ class SalaryCalculator {
 
     goHome() {
         // Hide ad containers when going home
-        const adContainers = document.querySelectorAll('.ad-container');
-        adContainers.forEach(container => {
-            container.classList.remove('ad-loaded');
-            container.style.display = 'none';
-        });
+        try {
+            var adContainers = document.querySelectorAll('.ad-container');
+            for (var i = 0; i < adContainers.length; i++) {
+                var container = adContainers[i];
+                container.classList.remove('ad-loaded');
+                container.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error hiding ad containers:', error);
+        }
 
         // Redirect to clean URL
         window.location.href = window.location.pathname;
@@ -879,7 +944,7 @@ class SalaryCalculator {
 }
 
 // Global functions for HTML onclick handlers
-let salaryCalculator;
+var salaryCalculator;
 
 function unlockSharedData() {
     if (salaryCalculator) {
@@ -894,13 +959,17 @@ function goHome() {
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    salaryCalculator = new SalaryCalculator();
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        salaryCalculator = new SalaryCalculator();
 
-    // Setup AdSense after a short delay to ensure DOM is ready
-    setTimeout(() => {
-        if (salaryCalculator && salaryCalculator.setupAdSense) {
-            salaryCalculator.setupAdSense();
-        }
-    }, 100);
+        // Setup AdSense after a short delay to ensure DOM is ready
+        setTimeout(function() {
+            if (salaryCalculator && salaryCalculator.setupAdSense) {
+                salaryCalculator.setupAdSense();
+            }
+        }, 100);
+    } catch (error) {
+        console.error('Error initializing application:', error);
+    }
 });

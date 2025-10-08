@@ -1,4 +1,4 @@
-// Salary Calculator with Vietnamese locale support
+// Enhanced Salary Calculator with Vietnamese locale support
 class SalaryCalculator {
     constructor() {
         this.nightShiftRate = 0.3; // 30% phụ cấp đêm
@@ -14,25 +14,61 @@ class SalaryCalculator {
             nightHoliday: 3.9    // 390%
         };
 
-        // Tax brackets for Vietnamese income tax
+        // Tax brackets for Vietnamese income tax (2024)
+        // Biểu thuế lũy tiến từng phần theo Nghị quyết 954/2020/UBTVQH14
         this.taxBrackets = [
-            { min: 0, max: 5000000, rate: 0.05 },      // 5%
-            { min: 5000000, max: 10000000, rate: 0.10 }, // 10%
-            { min: 10000000, max: 18000000, rate: 0.15 }, // 15%
-            { min: 18000000, max: 32000000, rate: 0.20 }, // 20%
-            { min: 32000000, max: 52000000, rate: 0.25 }, // 25%
-            { min: 52000000, max: 80000000, rate: 0.30 }, // 30%
-            { min: 80000000, max: Infinity, rate: 0.35 }  // 35%
+            { min: 0, max: 5000000, rate: 0.05 },      // 5% cho phần thu nhập từ 0 đến 5 triệu
+            { min: 5000000, max: 10000000, rate: 0.10 }, // 10% cho phần thu nhập từ 5 đến 10 triệu
+            { min: 10000000, max: 18000000, rate: 0.15 }, // 15% cho phần thu nhập từ 10 đến 18 triệu
+            { min: 18000000, max: 32000000, rate: 0.20 }, // 20% cho phần thu nhập từ 18 đến 32 triệu
+            { min: 32000000, max: 52000000, rate: 0.25 }, // 25% cho phần thu nhập từ 32 đến 52 triệu
+            { min: 52000000, max: 80000000, rate: 0.30 }, // 30% cho phần thu nhập từ 52 đến 80 triệu
+            { min: 80000000, max: Infinity, rate: 0.35 }  // 35% cho phần thu nhập trên 80 triệu
         ];
 
         this.init();
     }
 
     init() {
+        this.checkForSharedData();
         this.loadFromLocalStorage();
         this.setupEventListeners();
         this.setupTheme();
         this.formatMoneyInputs();
+    }
+
+    checkForSharedData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareParam = urlParams.get('share');
+
+        if (shareParam) {
+            try {
+                const shareData = JSON.parse(atob(shareParam));
+                this.showPasswordScreen(shareData);
+            } catch (error) {
+                console.error('Error processing shared data:', error);
+                this.showNotification('Link chia sẻ không hợp lệ!', 'error');
+                // Redirect to clean URL after 2 seconds
+                setTimeout(() => {
+                    window.location.href = window.location.pathname;
+                }, 2000);
+            }
+        }
+    }
+
+    showPasswordScreen(shareData) {
+        this.sharedData = shareData;
+        document.getElementById('passwordScreen').classList.add('show');
+        document.getElementById('sharePassword').focus();
+
+        // Hide main calculator
+        document.querySelector('.app-container').style.display = 'none';
+    }
+
+    hidePasswordScreen() {
+        document.getElementById('passwordScreen').classList.remove('show');
+        document.getElementById('sharePassword').value = '';
+        document.querySelector('.app-container').style.display = 'block';
     }
 
     setupEventListeners() {
@@ -84,6 +120,13 @@ class SalaryCalculator {
                 this.hideShareModal();
             }
         });
+
+        // Password screen events
+        document.getElementById('sharePassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.unlockSharedData();
+            }
+        });
     }
 
     setupTheme() {
@@ -103,12 +146,14 @@ class SalaryCalculator {
     }
 
     formatMoneyInputs() {
-        const moneyInputs = document.querySelectorAll('.money-input');
+        const moneyInputs = document.querySelectorAll('.form-input[type="text"]');
         moneyInputs.forEach(input => {
-            let value = input.value.replace(/[^\d]/g, '');
-            if (value) {
-                value = parseInt(value).toLocaleString('vi-VN');
-                input.value = value;
+            if (input.id === 'basicSalary' || input.id === 'allowance' || input.id === 'otherIncome' || input.id === 'unionFee') {
+                let value = input.value.replace(/[^\d]/g, '');
+                if (value) {
+                    value = parseInt(value).toLocaleString('vi-VN');
+                    input.value = value;
+                }
             }
         });
     }
@@ -187,23 +232,42 @@ class SalaryCalculator {
         const healthInsuranceRate = parseFloat(document.getElementById('healthInsurance').value) / 100 || 0.015;
         const unemploymentInsuranceRate = parseFloat(document.getElementById('unemploymentInsurance').value) / 100 || 0.01;
 
+        // Công đoàn cố định 40.000 VNĐ
+        const unionFeeAmount = this.parseMoneyValue(document.getElementById('unionFee').value) || 40000;
+
         const socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
         const healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
         const unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
         const totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
+        const totalDeductions = totalInsurance + unionFeeAmount;
 
         return {
             socialInsAmount,
             healthInsAmount,
             unemploymentInsAmount,
-            totalInsurance
+            unionFeeAmount,
+            totalInsurance,
+            totalDeductions
         };
     }
 
     calculateTax(taxableIncome) {
-        let tax = 0;
-        let remainingIncome = taxableIncome;
+        // Áp dụng mức khởi điểm 11.4 triệu VNĐ và giảm trừ gia cảnh theo Luật Thuế TNCN mới nhất (2024)
+        const taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
 
+        // Lấy số người phụ thuộc
+        const dependents = parseInt(document.getElementById('dependents').value) || 0;
+
+        // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
+        const familyDeduction = taxFreeThreshold + (dependents * 4400000);
+
+        // Thu nhập chịu thuế thực tế (sau khi trừ giảm trừ gia cảnh)
+        const actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
+
+        let tax = 0;
+        let remainingIncome = actualTaxableIncome;
+
+        // Áp dụng biểu thuế lũy tiến từng phần
         for (const bracket of this.taxBrackets) {
             if (remainingIncome <= 0) break;
 
@@ -212,7 +276,12 @@ class SalaryCalculator {
             remainingIncome -= taxableInBracket;
         }
 
-        return Math.round(tax);
+        return {
+            tax: Math.round(tax),
+            familyDeduction: familyDeduction,
+            actualTaxableIncome: actualTaxableIncome,
+            dependents: dependents
+        };
     }
 
     calculateSalary() {
@@ -234,11 +303,11 @@ class SalaryCalculator {
             // Taxable income (gross salary - insurance deductions)
             const taxableIncome = grossSalary - insurance.totalInsurance;
 
-            // Calculate tax
-            const incomeTax = this.calculateTax(taxableIncome);
+            // Calculate tax with family deduction
+            const taxResult = this.calculateTax(taxableIncome);
 
-            // Net salary (after tax and insurance)
-            const netSalary = grossSalary - incomeTax - insurance.totalInsurance;
+            // Net salary (after tax and all deductions)
+            const netSalary = grossSalary - taxResult.tax - insurance.totalDeductions;
 
             // Update UI
             this.updateResults({
@@ -247,7 +316,7 @@ class SalaryCalculator {
                 totalOvertimeSalary,
                 grossSalary,
                 taxableIncome,
-                incomeTax,
+                taxResult,
                 netSalary,
                 overtimeDetails,
                 insurance
@@ -271,13 +340,13 @@ class SalaryCalculator {
                 const detailEl = document.createElement('div');
                 detailEl.className = 'result-item';
                 detailEl.innerHTML = `
-                    <span class="label">${detail.type} (${detail.hours}h):</span>
-                    <span class="value">${detail.salary.toLocaleString('vi-VN')} VNĐ</span>
+                    <span class="result-label">${detail.type} (${detail.hours}h):</span>
+                    <span class="result-value">${detail.salary.toLocaleString('vi-VN')} VNĐ</span>
                 `;
                 overtimeDetailsEl.appendChild(detailEl);
             });
         } else {
-            overtimeDetailsEl.innerHTML = '<p style="color: var(--light-text-secondary); text-align: center; padding: 1rem;">Không có giờ tăng ca</p>';
+            overtimeDetailsEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-md); font-style: italic;">Không có giờ tăng ca</p>';
         }
 
         // Update summary
@@ -285,15 +354,19 @@ class SalaryCalculator {
         document.getElementById('nightAllowance').textContent = `${data.nightAllowance.toLocaleString('vi-VN')} VNĐ`;
         document.getElementById('totalOvertime').textContent = `${data.totalOvertimeSalary.toLocaleString('vi-VN')} VNĐ`;
         document.getElementById('grossSalary').textContent = `${data.grossSalary.toLocaleString('vi-VN')} VNĐ`;
-        document.getElementById('taxableSalary').textContent = `${data.taxableIncome.toLocaleString('vi-VN')} VNĐ`;
-        document.getElementById('incomeTax').textContent = `${data.incomeTax.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('totalDeductionsDisplay').textContent = `${data.insurance.totalDeductions.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('taxableSalary').textContent = `${data.taxResult.actualTaxableIncome.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('familyDeduction').textContent = `${data.taxResult.familyDeduction.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('dependentsCount').textContent = `${data.taxResult.dependents} người`;
+        document.getElementById('incomeTax').textContent = `${data.taxResult.tax.toLocaleString('vi-VN')} VNĐ`;
         document.getElementById('netSalary').textContent = `${data.netSalary.toLocaleString('vi-VN')} VNĐ`;
 
         // Update insurance details
         document.getElementById('socialInsAmount').textContent = `${data.insurance.socialInsAmount.toLocaleString('vi-VN')} VNĐ`;
         document.getElementById('healthInsAmount').textContent = `${data.insurance.healthInsAmount.toLocaleString('vi-VN')} VNĐ`;
         document.getElementById('unemploymentInsAmount').textContent = `${data.insurance.unemploymentInsAmount.toLocaleString('vi-VN')} VNĐ`;
-        document.getElementById('totalInsurance').textContent = `${data.insurance.totalInsurance.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('unionFeeAmount').textContent = `${data.insurance.unionFeeAmount.toLocaleString('vi-VN')} VNĐ`;
+        document.getElementById('totalDeductions').textContent = `${data.insurance.totalDeductions.toLocaleString('vi-VN')} VNĐ`;
 
         // Show results section
         document.getElementById('resultsSection').style.display = 'block';
@@ -324,6 +397,8 @@ class SalaryCalculator {
         document.getElementById('socialInsurance').value = '8';
         document.getElementById('healthInsurance').value = '1.5';
         document.getElementById('unemploymentInsurance').value = '1';
+        document.getElementById('unionFee').value = '40000';
+        document.getElementById('dependents').value = '0';
 
         // Hide results
         document.getElementById('resultsSection').style.display = 'none';
@@ -347,7 +422,9 @@ class SalaryCalculator {
             nightHolidayOvertime: document.getElementById('nightHolidayOvertime').value,
             socialInsurance: document.getElementById('socialInsurance').value,
             healthInsurance: document.getElementById('healthInsurance').value,
-            unemploymentInsurance: document.getElementById('unemploymentInsurance').value
+            unemploymentInsurance: document.getElementById('unemploymentInsurance').value,
+            unionFee: document.getElementById('unionFee').value,
+            dependents: document.getElementById('dependents').value
         };
 
         localStorage.setItem('salaryCalculatorData', JSON.stringify(data));
@@ -375,17 +452,20 @@ class SalaryCalculator {
 
     showShareModal() {
         document.getElementById('shareModal').classList.add('show');
-        document.getElementById('sharePassword').focus();
+        document.getElementById('modalPassword').focus();
     }
 
     hideShareModal() {
         document.getElementById('shareModal').classList.remove('show');
-        document.getElementById('sharePassword').value = '';
+        document.getElementById('modalPassword').value = '';
         document.getElementById('shareLink').value = '';
+
+        // Hide the link section when closing modal
+        document.getElementById('linkSection').style.display = 'none';
     }
 
     generateShareLink() {
-        const password = document.getElementById('sharePassword').value.trim();
+        const password = document.getElementById('modalPassword').value.trim();
         if (!password) {
             this.showNotification('Vui lòng nhập mật khẩu!', 'error');
             return;
@@ -405,7 +485,9 @@ class SalaryCalculator {
             nightHolidayOvertime: parseFloat(document.getElementById('nightHolidayOvertime').value) || 0,
             socialInsurance: parseFloat(document.getElementById('socialInsurance').value) || 8,
             healthInsurance: parseFloat(document.getElementById('healthInsurance').value) || 1.5,
-            unemploymentInsurance: parseFloat(document.getElementById('unemploymentInsurance').value) || 1
+            unemploymentInsurance: parseFloat(document.getElementById('unemploymentInsurance').value) || 1,
+            unionFee: this.parseMoneyValue(document.getElementById('unionFee').value) || 40000,
+            dependents: parseInt(document.getElementById('dependents').value) || 0
         };
 
         // Create data object with password
@@ -419,6 +501,10 @@ class SalaryCalculator {
         const shareUrl = `${window.location.origin}${window.location.pathname}?share=${btoa(JSON.stringify(shareData))}`;
 
         document.getElementById('shareLink').value = shareUrl;
+
+        // Show the link section after successful generation
+        document.getElementById('linkSection').style.display = 'block';
+
         this.showNotification('Đã tạo link chia sẻ!', 'success');
     }
 
@@ -450,57 +536,72 @@ class SalaryCalculator {
             notification.classList.remove('show');
         }, 3000);
     }
+
+    // Password protection functions
+    unlockSharedData() {
+        const password = document.getElementById('sharePassword').value.trim();
+        if (!password) {
+            this.showNotification('Vui lòng nhập mật khẩu!', 'error');
+            return;
+        }
+
+        if (btoa(password) === this.sharedData.password) {
+            // Password correct, load shared data
+            const formData = JSON.parse(atob(this.sharedData.data));
+
+            // Fill form with shared data
+            Object.keys(formData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (key.includes('Salary') || key.includes('Income') || key === 'unionFee') {
+                        element.value = formData[key].toLocaleString('vi-VN');
+                    } else {
+                        element.value = formData[key];
+                    }
+                }
+            });
+
+            // Hide password screen and show calculator
+            this.hidePasswordScreen();
+
+            // Calculate and show results
+            this.calculateSalary();
+
+            // Remove share parameter from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('share');
+            window.history.replaceState({}, '', url);
+
+            this.showNotification('Đã mở khóa thành công!', 'success');
+
+        } else {
+            this.showNotification('Mật khẩu không đúng!', 'error');
+            document.getElementById('sharePassword').value = '';
+        }
+    }
+
+    goHome() {
+        // Redirect to clean URL
+        window.location.href = window.location.pathname;
+    }
 }
 
-// URL parameter handling for shared links
-function handleSharedData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shareParam = urlParams.get('share');
+// Global functions for HTML onclick handlers
+let salaryCalculator;
 
-    if (shareParam) {
-        try {
-            const shareData = JSON.parse(atob(shareParam));
+function unlockSharedData() {
+    if (salaryCalculator) {
+        salaryCalculator.unlockSharedData();
+    }
+}
 
-            // Show password prompt
-            const password = prompt('Nhập mật khẩu để xem thông tin chia sẻ:');
-            if (password && btoa(password) === shareData.password) {
-                const formData = JSON.parse(atob(shareData.data));
-
-                // Fill form with shared data
-                Object.keys(formData).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        if (key.includes('Salary') || key.includes('Income')) {
-                            element.value = formData[key].toLocaleString('vi-VN');
-                        } else {
-                            element.value = formData[key];
-                        }
-                    }
-                });
-
-                // Calculate and show results
-                const calculator = new SalaryCalculator();
-                calculator.calculateSalary();
-
-                // Remove share parameter from URL
-                urlParams.delete('share');
-                const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
-                window.history.replaceState({}, '', newUrl);
-
-            } else {
-                alert('Mật khẩu không đúng!');
-                window.location.href = window.location.pathname;
-            }
-        } catch (error) {
-            console.error('Error processing shared data:', error);
-            alert('Link chia sẻ không hợp lệ!');
-            window.location.href = window.location.pathname;
-        }
+function goHome() {
+    if (salaryCalculator) {
+        salaryCalculator.goHome();
     }
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    new SalaryCalculator();
-    handleSharedData();
+    salaryCalculator = new SalaryCalculator();
 });

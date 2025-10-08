@@ -3,48 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Máy Tính Lương Thực Nhận</title>
+    <title>Tính Lương Thực Nhận - Máy Tính Lương Online Chính Xác Nhất Việt Nam</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Công cụ tính lương thực nhận chính xác nhất Việt Nam. Tính toán lương gross to net, thuế TNCN, bảo hiểm xã hội, phụ cấp đêm và tăng ca theo quy định pháp luật mới nhất.">
+    <meta name="keywords" content="tính lương thực nhận, máy tính lương, tính lương gross to net, thuế thu nhập cá nhân, bảo hiểm xã hội, phụ cấp đêm, tăng ca, lương Việt Nam">
+    <meta name="author" content="Tính Lương Thực Nhận">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Vietnamese">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tinhluong.hau.xyz/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tính Lương Thực Nhận - Máy Tính Lương Online Chính Xác Nhất Việt Nam">
+    <meta property="og:description" content="Công cụ tính lương thực nhận chính xác nhất Việt Nam. Tính toán lương gross to net, thuế TNCN, bảo hiểm xã hội, phụ cấp đêm và tăng ca theo quy định pháp luật mới nhất.">
+    <meta property="og:url" content="https://tinhluong.hau.xyz/">
+    <meta property="og:site_name" content="Tính Lương Thực Nhận">
+    <meta property="og:locale" content="vi_VN">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tính Lương Thực Nhận - Máy Tính Lương Online Chính Xác Nhất Việt Nam">
+    <meta name="twitter:description" content="Công cụ tính lương thực nhận chính xác nhất Việt Nam. Tính toán lương gross to net, thuế TNCN, bảo hiểm xã hội, phụ cấp đêm và tăng ca theo quy định pháp luật mới nhất.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="msapplication-TileColor" content="#3b82f6">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --secondary-color: #10b981;
-            --secondary-hover: #059669;
-            --accent-color: #8b5cf6;
-            --accent-hover: #7c3aed;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --success-color: #22c55e;
+            /* Color Palette */
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-800: #1e40af;
+            --primary-900: #1e3a8a;
 
-            --light-bg: #f8fafc;
-            --light-card: #ffffff;
-            --light-text: #1f2937;
-            --light-text-secondary: #6b7280;
-            --light-border: #e5e7eb;
-            --light-input: #ffffff;
+            --success-50: #f0fdf4;
+            --success-100: #dcfce7;
+            --success-200: #bbf7d0;
+            --success-300: #86efac;
+            --success-400: #4ade80;
+            --success-500: #22c55e;
+            --success-600: #16a34a;
+            --success-700: #15803d;
+            --success-800: #166534;
+            --success-900: #14532d;
 
-            --dark-bg: #0f172a;
-            --dark-card: #1e293b;
-            --dark-text: #f1f5f9;
+            --warning-50: #fffbeb;
+            --warning-100: #fef3c7;
+            --warning-200: #fde68a;
+            --warning-300: #fcd34d;
+            --warning-400: #fbbf24;
+            --warning-500: #f59e0b;
+            --warning-600: #d97706;
+            --warning-700: #b45309;
+            --warning-800: #92400e;
+            --warning-900: #78350f;
+
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+
+            /* Theme Variables */
+            --bg-primary: var(--gray-50);
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.8);
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            /* Dark Theme */
+            --dark-bg-primary: #0f172a;
+            --dark-bg-secondary: #1e293b;
+            --dark-bg-glass: rgba(30, 41, 59, 0.8);
+            --dark-text-primary: #f1f5f9;
             --dark-text-secondary: #94a3b8;
-            --dark-border: #334155;
-            --dark-input: #1e293b;
+            --dark-text-muted: #64748b;
+            --dark-border-color: #334155;
+            --dark-shadow-color: rgba(0, 0, 0, 0.3);
 
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            /* Component Variables */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
 
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
 
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px 0 var(--shadow-color);
+            --shadow-md: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+            --shadow-lg: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+            --shadow-xl: 0 20px 25px -5px var(--shadow-color), 0 8px 10px -6px var(--shadow-color);
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -53,118 +136,265 @@
             box-sizing: border-box;
         }
 
-        html {
-            font-size: 16px;
-        }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             line-height: 1.6;
-            color: var(--light-text);
-            background-color: var(--light-bg);
-            transition: var(--transition);
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #e0e7ff 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
+        /* Dark Theme */
         .dark-theme {
-            --light-bg: var(--dark-bg);
-            --light-card: var(--dark-card);
-            --light-text: var(--dark-text);
-            --light-text-secondary: var(--dark-text-secondary);
-            --light-border: var(--dark-border);
-            --light-input: var(--dark-input);
+            --bg-primary: var(--dark-bg-primary);
+            --bg-secondary: var(--dark-bg-secondary);
+            --bg-glass: var(--dark-bg-glass);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --text-muted: var(--dark-text-muted);
+            --border-color: var(--dark-border-color);
+            --shadow-color: var(--dark-shadow-color);
         }
 
-        .container {
+        .dark-theme body {
+            background: linear-gradient(135deg, var(--dark-bg-primary) 0%, #1e1b4b 100%);
+        }
+
+        /* Container */
+        .app-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: var(--spacing-lg);
+            min-height: 100vh;
         }
 
         /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: var(--light-card);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--light-border);
+        .app-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
         }
 
-        .header h1 {
-            font-size: 1.875rem;
+        .app-header h1 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
             font-weight: 700;
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--spacing-md);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            justify-content: center;
+            gap: var(--spacing-md);
         }
 
-        .header h1 i {
-            font-size: 2rem;
+        .app-header h1 i {
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .theme-toggle {
-            background: none;
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 50px;
+            height: 50px;
             border: none;
-            font-size: 1.25rem;
-            padding: 0.75rem;
-            border-radius: var(--radius-lg);
+            border-radius: 50%;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            font-size: 1.2rem;
             cursor: pointer;
             transition: var(--transition);
-            color: var(--light-text);
-            background-color: var(--light-input);
-            border: 1px solid var(--light-border);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
         }
 
         .theme-toggle:hover {
-            background-color: var(--light-border);
-            transform: scale(1.05);
+            transform: scale(1.1) rotate(180deg);
+            background: var(--primary-500);
+            color: white;
         }
 
-        /* Calculator Wrapper */
-        .calculator-wrapper {
+        /* Password Protection Screen */
+        .password-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+        }
+
+        .password-screen.show {
+            display: flex;
+        }
+
+        .password-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .password-card h2 {
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .password-card .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .password-card input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .password-card input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .password-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .password-actions .btn {
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+            transform: translateY(-2px);
+        }
+
+        /* Main Calculator */
+        .calculator-main {
             display: grid;
-            gap: 2rem;
+            gap: var(--spacing-xl);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Form Sections */
         .form-section {
-            background: var(--light-card);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--light-border);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
             transition: var(--transition);
+            margin-bottom: 10px ;
         }
 
         .form-section:hover {
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
 
-        .form-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--light-text);
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .form-section h2 i {
-            color: var(--primary-color);
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            gap: var(--spacing-lg);
         }
 
         .form-group {
@@ -172,52 +402,64 @@
             flex-direction: column;
         }
 
-        .form-group label {
+        .form-label {
             font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--light-text);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
             font-size: 0.875rem;
         }
 
         .form-input {
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--light-border);
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
             border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             font-size: 1rem;
             transition: var(--transition);
-            background-color: var(--light-input);
-            color: var(--light-text);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .form-input:hover {
-            border-color: var(--primary-color);
+            border-color: var(--primary-400);
         }
 
-        /* Money Input */
-        .money-input {
+        .input-icon {
             position: relative;
         }
 
-        .money-input::placeholder {
-            color: var(--light-text-secondary);
+        .input-icon .form-input {
+            padding-left: 3rem;
         }
 
-        /* Form Actions */
-        .form-actions {
+        .input-icon i {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 65%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) 0 0 0;
+            border-top: 1px solid var(--border-color);
         }
 
         .btn {
-            padding: 1rem 2rem;
+            padding: var(--spacing-md) var(--spacing-lg);
             border: none;
             border-radius: var(--radius-lg);
             font-size: 1rem;
@@ -227,141 +469,152 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            min-height: 3rem;
+            gap: var(--spacing-sm);
+            min-height: 48px;
+            text-decoration: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, var(--success-500), var(--success-600));
+            color: white;
+            flex: 2;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+            color: white;
             flex: 1;
-            min-width: 200px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        .btn-share {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-hover), #1d4ed8);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-secondary {
-            background: var(--light-border);
-            color: var(--light-text);
-        }
-
-        .btn-secondary:hover {
-            background: #d1d5db;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-            color: white;
-        }
-
-        .btn-accent:hover {
-            background: linear-gradient(135deg, var(--accent-hover), #6d28d9);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            flex: 1;
         }
 
         /* Results Section */
         .results-section {
-            margin-top: 2rem;
+            display: none;
+            animation: slideInUp 0.5s ease-out;
         }
 
-        .results-section h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--light-text);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .results-section h2 i {
-            color: var(--secondary-color);
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+            gap: var(--spacing-xl);
         }
 
         .result-card {
-            background: var(--light-card);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--light-border);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
             transition: var(--transition);
         }
 
         .result-card:hover {
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
 
-        .result-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--light-text);
+        .result-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .result-card h3 i {
-            color: var(--primary-color);
+        .result-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
-        .result-summary {
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-list {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: var(--spacing-md);
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--light-border);
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .result-item:last-child {
             border-bottom: none;
         }
 
-        .result-item .label {
+        .result-label {
             font-weight: 500;
-            color: var(--light-text);
+            color: var(--text-secondary);
         }
 
-        .result-item .value {
+        .result-value {
             font-weight: 700;
-            color: var(--primary-color);
-            font-size: 1.1rem;
+            color: var(--primary-600);
+            font-size: 1.05rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .result-item.highlight {
-            background: linear-gradient(135deg, rgb(59 130 246 / 0.1), rgb(147 197 253 / 0.1));
-            padding: 1rem;
+        .result-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+            padding: var(--spacing-md);
             border-radius: var(--radius-lg);
-            border: 2px solid rgb(59 130 246 / 0.2);
+            border-left: 4px solid var(--primary-500);
         }
 
-        .result-item.highlight .label {
-            color: var(--primary-color);
+        .result-highlight .result-label,
+        .result-highlight .result-value {
+            color: var(--primary-700);
             font-weight: 600;
-        }
-
-        .result-item.highlight .value {
-            color: var(--primary-color);
-            font-size: 1.25rem;
         }
 
         /* Modal */
@@ -372,11 +625,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 3000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
+            padding: var(--spacing-lg);
         }
 
         .modal.show {
@@ -384,13 +638,14 @@
         }
 
         .modal-content {
-            background-color: var(--light-card);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            max-width: 500px;
-            width: 90%;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
             box-shadow: var(--shadow-xl);
-            border: 1px solid var(--light-border);
+            max-width: 500px;
+            width: 100%;
             animation: modalSlideIn 0.3s ease-out;
         }
 
@@ -409,65 +664,100 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-xl);
         }
 
-        .modal-header h3 {
+        .modal-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--light-text);
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-header h3 i {
-            color: var(--accent-color);
+            gap: var(--spacing-md);
         }
 
         .modal-close {
             background: none;
             border: none;
             font-size: 1.5rem;
+            color: var(--text-muted);
             cursor: pointer;
-            color: var(--light-text-secondary);
-            padding: 0.5rem;
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
             transition: var(--transition);
         }
 
         .modal-close:hover {
-            background-color: var(--light-border);
-            color: var(--light-text);
-        }
-
-        .modal-body {
-            margin-bottom: 2rem;
+            background: var(--gray-200);
+            color: var(--text-primary);
         }
 
         .modal-footer {
-            display: flex;
-            gap: 1rem;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-footer .btn {
+            width: 100%;
+        }
+
+        .form-group-modal {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group-modal label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-group-modal input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
         }
 
         .link-container {
             display: flex;
-            gap: 0.75rem;
+            gap: var(--spacing-md);
         }
 
-        .link-container .btn {
-            flex: none;
-            min-width: auto;
-            padding: 0.75rem 1rem;
+        .link-input {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-copy {
+            background: var(--gray-200);
+            color: var(--text-primary);
+            white-space: nowrap;
+            padding: var(--spacing-sm) var(--spacing-md);
+            min-height: 40px;
+        }
+
+        .btn-copy:hover {
+            background: var(--gray-300);
         }
 
         /* Notification */
         .notification {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background: var(--secondary-color);
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--success-500);
             color: white;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
@@ -475,7 +765,7 @@
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 9999;
-            max-width: 400px;
+            max-width: 300px;
         }
 
         .notification.show {
@@ -483,101 +773,55 @@
             opacity: 1;
         }
 
+        .notification.error {
+            background: #ef4444;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
-            .container {
-                padding: 0.5rem;
+            .app-container {
+                padding: var(--spacing-md);
             }
 
-            .header {
-                padding: 1rem;
-                margin-bottom: 1rem;
+            .app-header {
+                padding: var(--spacing-lg) var(--spacing-md);
+                margin-bottom: var(--spacing-lg);
             }
 
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .calculator-wrapper {
-                gap: 1rem;
+            .theme-toggle {
+                top: var(--spacing-md);
+                right: var(--spacing-md);
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
             }
 
             .form-section {
-                padding: 1.5rem;
+                padding: var(--spacing-lg);
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .form-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                min-width: auto;
             }
 
             .results-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: var(--spacing-lg);
             }
 
             .result-card {
-                padding: 1.5rem;
+                padding: var(--spacing-lg);
             }
-
-            .modal-content {
-                margin: 1rem;
-                width: calc(100% - 2rem);
-            }
-
-            .link-container {
-                flex-direction: column;
-            }
-
-            .notification {
-                right: 1rem;
-                bottom: 1rem;
-                left: 1rem;
-                max-width: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .form-section {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.25rem;
-            }
-
-            .header h1 i {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Loading Animation */
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Focus States */
-        .btn:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.3);
         }
 
         /* Print Styles */
         @media print {
-            .header .theme-toggle,
-            .form-actions,
+            .theme-toggle,
+            .action-buttons,
             .modal,
-            .notification {
+            .notification,
+            .password-screen,
+            .ad-container {
                 display: none !important;
             }
 
@@ -585,70 +829,248 @@
             .result-card {
                 box-shadow: none;
                 border: 1px solid #ccc;
+                background: white;
             }
         }
+
+        @media (max-width: 480px) {
+            .form-section {
+                padding: var(--spacing-md);
+            }
+
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-card {
+                padding: var(--spacing-md);
+            }
+        }
+
+        /* Focus Styles */
+        .btn:focus,
+        .form-input:focus,
+        .theme-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* AdSense Ad Containers */
+        .ad-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .ad-container.header-ad {
+            margin: var(--spacing-xl) 0;
+            padding: var(--spacing-md);
+        }
+
+        .ad-container.results-ad {
+            margin: var(--spacing-2xl) 0;
+            padding: var(--spacing-xl);
+        }
+
+        .ad-container.footer-ad {
+            margin-top: var(--spacing-2xl);
+            padding: var(--spacing-xl);
+        }
+
+        /* Dark Theme Ads */
+        .dark-theme .ad-container {
+            border: 1px solid var(--dark-border-color);
+            background: var(--dark-bg-glass);
+        }
     </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Tính Lương Thực Nhận",
+        "description": "Công cụ tính lương thực nhận chính xác nhất Việt Nam. Tính toán lương gross to net, thuế TNCN từ 11.4 triệu, bảo hiểm xã hội, phụ cấp đêm và tăng ca theo quy định pháp luật mới nhất.",
+        "url": "https://tinhluong.hau.xyz/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "VND"
+        },
+        "creator": {
+            "@type": "Organization",
+            "name": "Tính Lương Thực Nhận"
+        },
+        "audience": {
+            "@type": "Audience",
+            "geographicArea": {
+                "@type": "Country",
+                "name": "Vietnam"
+            }
+        },
+        "featureList": [
+            "Tính lương gross to net",
+            "Tính thuế thu nhập cá nhân từ 11.4 triệu",
+            "Tính bảo hiểm xã hội",
+            "Tính phụ cấp đêm",
+            "Tính lương tăng ca",
+            "Giảm trừ gia cảnh cho người phụ thuộc",
+            "Lưu trữ dữ liệu localStorage",
+            "Chia sẻ link bảo mật",
+            "Giao diện responsive",
+            "Dark/Light theme"
+        ],
+        "screenshot": "https://tinhluong.hau.xyz/screenshot.png",
+        "softwareVersion": "1.0.0",
+        "datePublished": "2024-01-01",
+        "inLanguage": "vi-VN"
+    }
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7587631210958149"
+         crossorigin="anonymous"></script>
+
+    <!-- AdSense Meta Tags -->
+    <meta name="google-adsense-account" content="ca-pub-7587631210958149">
+    <meta name="google-adsense-platform-account" content="ca-pub-7587631210958149">
+    <meta name="google-adsense-platform-domain" content="tinhluong.hau.xyz">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-calculator"></i> Máy Tính Lương Thực Nhận</h1>
-            <button id="themeToggle" class="theme-toggle" aria-label="Chuyển đổi theme">
-                <i class="fas fa-moon"></i>
-            </button>
+    <!-- Password Protection Screen -->
+    <div id="passwordScreen" class="password-screen">
+        <div class="password-card">
+            <h2><i class="fas fa-lock"></i> Nhập Mật Khẩu</h2>
+            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                Vui lòng nhập mật khẩu để xem thông tin được chia sẻ
+            </p>
+            <div class="form-group">
+                <input type="password" id="sharePassword" placeholder="Nhập mật khẩu..." />
+            </div>
+            <div class="password-actions">
+                <button class="btn btn-primary" onclick="unlockSharedData()">
+                    <i class="fas fa-unlock"></i> Mở Khóa
+                </button>
+                <button class="btn btn-secondary" onclick="goHome()">
+                    <i class="fas fa-home"></i> Về Trang Chủ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="app-container">
+        <header class="app-header">
+            <h1>
+                <i class="fas fa-calculator"></i>
+                Tính Lương Thực Nhận
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                Tính toán chính xác lương thực nhận với các khoản phụ cấp và thuế
+            </p>
+            <div style="margin-top: var(--spacing-lg);">
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+                    <strong>Công cụ tính lương online miễn phí</strong> - Tính toán lương gross to net chính xác nhất Việt Nam<br>
+                    <em>Đang áp dụng luật thuế TNCN mới nhất (2024): Mức khởi điểm 11.4 triệu VNĐ + giảm trừ gia cảnh 4.4 triệu/người phụ thuộc</em><br>
+                    Hỗ trợ đầy đủ: thuế TNCN, bảo hiểm xã hội, phụ cấp đêm, lương tăng ca theo quy định pháp luật mới nhất
+                </p>
+            </div>
         </header>
 
-        <div class="calculator-wrapper">
-            <form class="salary-form" id="salaryForm">
+        <!-- Header Ad Slot -->
+        <div class="ad-container header-ad" style="text-align: center; margin-bottom: var(--spacing-xl);">
+            <ins class="adsbygoogle"
+                 style="display:block; min-height: 90px;"
+                 data-ad-client="ca-pub-7587631210958149"
+                 data-ad-slot="2117328578"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+
+        <button id="themeToggle" class="theme-toggle" aria-label="Chuyển đổi theme">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <div class="calculator-main">
+            <form id="salaryForm">
                 <!-- Thông tin lương cơ bản -->
                 <div class="form-section">
-                    <h2><i class="fas fa-money-bill-wave"></i> Thông Tin Lương Cơ Bản</h2>
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h2 class="section-title">Thông Tin Lương Cơ Bản</h2>
+                    </div>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="basicSalary">Lương Cơ Bản (VNĐ)</label>
-                            <input type="text" id="basicSalary" class="form-input money-input" placeholder="5,000,000" value="5000000">
+                        <div class="form-group input-icon">
+                            <i class="fas fa-coins"></i>
+                            <label class="form-label">Lương Cơ Bản (VNĐ)</label>
+                            <input type="text" id="basicSalary" class="form-input" placeholder="5,000,000" value="5000000">
                         </div>
-                        <div class="form-group">
-                            <label for="allowance">Phụ Cấp (VNĐ)</label>
-                            <input type="text" id="allowance" class="form-input money-input" placeholder="1,500,000" value="1500000">
+                        <div class="form-group input-icon">
+                            <i class="fas fa-gift"></i>
+                            <label class="form-label">Phụ Cấp (VNĐ)</label>
+                            <input type="text" id="allowance" class="form-input" placeholder="1,500,000" value="1500000">
                         </div>
-                        <div class="form-group">
-                            <label for="nightShiftHours">Số Giờ Làm Đêm</label>
+                        <div class="form-group input-icon">
+                            <i class="fas fa-moon"></i>
+                            <label class="form-label">Số Giờ Làm Đêm</label>
                             <input type="number" id="nightShiftHours" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
+                        <div class="form-group input-icon">
+                            <i class="fas fa-plus-circle"></i>
+                            <label class="form-label">Thu Nhập Khác (VNĐ)</label>
+                            <input type="text" id="otherIncome" class="form-input" placeholder="0" value="0">
+                        </div>
                         <div class="form-group">
-                            <label for="otherIncome">Thu Nhập Khác (VNĐ)</label>
-                            <input type="text" id="otherIncome" class="form-input money-input" placeholder="0" value="0">
+                            <label class="form-label">Số Người Phụ Thuộc</label>
+                            <input type="number" id="dependents" class="form-input" placeholder="0" min="0" step="1" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Công Đoàn (VNĐ)</label>
+                            <input type="text" id="unionFee" class="form-input" placeholder="40,000" value="40000">
                         </div>
                     </div>
                 </div>
 
                 <!-- Thông tin tăng ca -->
                 <div class="form-section">
-                    <h2><i class="fas fa-clock"></i> Thông Tin Tăng Ca</h2>
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h2 class="section-title">Thông Tin Tăng Ca</h2>
+                    </div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="normalDayOvertime">Ngày Thường (150%)</label>
+                            <label class="form-label">Ngày Thường (150%)</label>
                             <input type="number" id="normalDayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                         <div class="form-group">
-                            <label for="normalNightOvertime">Đêm Thường (200%)</label>
+                            <label class="form-label">Đêm Thường (200%)</label>
                             <input type="number" id="normalNightOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                         <div class="form-group">
-                            <label for="dayOffOvertime">Ngày Nghỉ (200%)</label>
+                            <label class="form-label">Ngày Nghỉ (200%)</label>
                             <input type="number" id="dayOffOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                         <div class="form-group">
-                            <label for="nightDayOffOvertime">Đêm Ngày Nghỉ (270%)</label>
+                            <label class="form-label">Đêm Ngày Nghỉ (270%)</label>
                             <input type="number" id="nightDayOffOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                         <div class="form-group">
-                            <label for="holidayOvertime">Ngày Lễ (300%)</label>
+                            <label class="form-label">Ngày Lễ (300%)</label>
                             <input type="number" id="holidayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                         <div class="form-group">
-                            <label for="nightHolidayOvertime">Đêm Lễ (390%)</label>
+                            <label class="form-label">Đêm Lễ (390%)</label>
                             <input type="number" id="nightHolidayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
                         </div>
                     </div>
@@ -656,104 +1078,138 @@
 
                 <!-- Thông tin bảo hiểm -->
                 <div class="form-section">
-                    <h2><i class="fas fa-shield-alt"></i> Thông Tin Đóng Bảo Hiểm</h2>
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="section-title">Thông Tin Đóng Bảo Hiểm</h2>
+                    </div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="socialInsurance">Bảo Hiểm Xã Hội (%)</label>
-                            <input type="number" id="socialInsurance" class="form-input" placeholder="8" min="0" max="100" step="0.1" value="8">
+                            <label class="form-label">Bảo Hiểm Xã Hội (%)</label>
+                            <input type="number" readonly id="socialInsurance" class="form-input" placeholder="8" min="0" max="100" step="0.1" value="8">
                         </div>
                         <div class="form-group">
-                            <label for="healthInsurance">Bảo Hiểm Y Tế (%)</label>
-                            <input type="number" id="healthInsurance" class="form-input" placeholder="1.5" min="0" max="100" step="0.1" value="1.5">
+                            <label class="form-label">Bảo Hiểm Y Tế (%)</label>
+                            <input type="number" readonly id="healthInsurance" class="form-input" placeholder="1.5" min="0" max="100" step="0.1" value="1.5">
                         </div>
                         <div class="form-group">
-                            <label for="unemploymentInsurance">Bảo Hiểm Thất Nghiệp (%)</label>
-                            <input type="number" id="unemploymentInsurance" class="form-input" placeholder="1" min="0" max="100" step="0.1" value="1">
+                            <label class="form-label">Bảo Hiểm Thất Nghiệp (%)</label>
+                            <input type="number" readonly id="unemploymentInsurance" class="form-input" placeholder="1" min="0" max="100" step="0.1" value="1">
                         </div>
                     </div>
                 </div>
 
-                <!-- Nút hành động -->
-                <div class="form-actions">
-                    <button type="button" id="calculateBtn" class="btn btn-primary">
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" id="calculateBtn" class="btn btn-calculate">
                         <i class="fas fa-calculator"></i> Tính Lương
                     </button>
-                    <button type="button" id="resetBtn" class="btn btn-secondary">
-                        <i class="fas fa-undo"></i> Khôi Phục Mặc Định
+                    <button type="button" id="resetBtn" class="btn btn-reset">
+                        <i class="fas fa-undo"></i> Khôi Phục
                     </button>
-                    <button type="button" id="shareBtn" class="btn btn-accent">
+                    <button type="button" id="shareBtn" class="btn btn-share">
                         <i class="fas fa-share"></i> Chia Sẻ
                     </button>
                 </div>
             </form>
 
-            <!-- Kết quả tính toán -->
-            <div class="results-section" id="resultsSection" style="display: none;">
-                <h2><i class="fas fa-chart-bar"></i> Kết Quả Tính Toán</h2>
-
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
                 <div class="results-grid">
                     <!-- Chi tiết tăng ca -->
                     <div class="result-card">
-                        <h3><i class="fas fa-plus-circle"></i> Chi Tiết Tăng Ca</h3>
-                        <div class="result-details" id="overtimeDetails">
+                        <div class="result-header">
+                            <div class="result-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <h3 class="result-title">Chi Tiết Tăng Ca</h3>
+                        </div>
+                        <div id="overtimeDetails" class="result-list">
                             <!-- Nội dung sẽ được thêm bằng JavaScript -->
                         </div>
                     </div>
 
                     <!-- Tổng quan lương -->
                     <div class="result-card">
-                        <h3><i class="fas fa-money-check-alt"></i> Tổng Quan Lương</h3>
-                        <div class="result-summary">
-                            <div class="result-item">
-                                <span class="label">Lương Cơ Bản + Phụ Cấp:</span>
-                                <span class="value" id="basicTotal">0 VNĐ</span>
+                        <div class="result-header">
+                            <div class="result-icon">
+                                <i class="fas fa-money-check-alt"></i>
                             </div>
+                            <h3 class="result-title">Tổng Quan Lương</h3>
+                        </div>
+                        <div class="result-list">
                             <div class="result-item">
-                                <span class="label">Phụ Cấp Đêm:</span>
-                                <span class="value" id="nightAllowance">0 VNĐ</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="label">Tổng Lương Tăng Ca:</span>
-                                <span class="value" id="totalOvertime">0 VNĐ</span>
-                            </div>
-                            <div class="result-item highlight">
-                                <span class="label">Tổng Lương Trước Thuế:</span>
-                                <span class="value" id="grossSalary">0 VNĐ</span>
+                                <span class="result-label">Lương Cơ Bản + Phụ Cấp:</span>
+                                <span class="result-value" id="basicTotal">0 VNĐ</span>
                             </div>
                             <div class="result-item">
-                                <span class="label">Lương Chịu Thuế:</span>
-                                <span class="value" id="taxableSalary">0 VNĐ</span>
+                                <span class="result-label">Phụ Cấp Đêm:</span>
+                                <span class="result-value" id="nightAllowance">0 VNĐ</span>
                             </div>
                             <div class="result-item">
-                                <span class="label">Thuế TNCN:</span>
-                                <span class="value" id="incomeTax">0 VNĐ</span>
+                                <span class="result-label">Tổng Lương Tăng Ca:</span>
+                                <span class="result-value" id="totalOvertime">0 VNĐ</span>
                             </div>
-                            <div class="result-item highlight">
-                                <span class="label">Lương Thực Nhận:</span>
-                                <span class="value" id="netSalary">0 VNĐ</span>
+                            <div class="result-item result-highlight">
+                                <span class="result-label">Tổng Lương Trước Thuế:</span>
+                                <span class="result-value" id="grossSalary">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Các Khoản Khấu Trừ (Bảo hiểm + Công đoàn 40k):</span>
+                                <span class="result-value" id="totalDeductionsDisplay">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Lương Chịu Thuế:</span>
+                                <span class="result-value" id="taxableSalary">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Giảm Trừ Gia Cảnh:</span>
+                                <span class="result-value" id="familyDeduction">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Số Người Phụ Thuộc:</span>
+                                <span class="result-value" id="dependentsCount">0 người</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Thuế TNCN:</span>
+                                <span class="result-value" id="incomeTax">0 VNĐ</span>
+                            </div>
+                            <div class="result-item result-highlight">
+                                <span class="result-label">Lương Thực Nhận:</span>
+                                <span class="result-value" id="netSalary">0 VNĐ</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Chi tiết bảo hiểm -->
                     <div class="result-card">
-                        <h3><i class="fas fa-file-invoice-dollar"></i> Chi Tiết Bảo Hiểm</h3>
-                        <div class="result-summary">
+                        <div class="result-header">
+                            <div class="result-icon">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <h3 class="result-title">Chi Tiết Bảo Hiểm & Công Đoàn</h3>
+                        </div>
+                        <div class="result-list">
                             <div class="result-item">
-                                <span class="label">BHXH (8%):</span>
-                                <span class="value" id="socialInsAmount">0 VNĐ</span>
+                                <span class="result-label">BHXH (8%):</span>
+                                <span class="result-value" id="socialInsAmount">0 VNĐ</span>
                             </div>
                             <div class="result-item">
-                                <span class="label">BHYT (1.5%):</span>
-                                <span class="value" id="healthInsAmount">0 VNĐ</span>
+                                <span class="result-label">BHYT (1.5%):</span>
+                                <span class="result-value" id="healthInsAmount">0 VNĐ</span>
                             </div>
                             <div class="result-item">
-                                <span class="label">BHTN (1%):</span>
-                                <span class="value" id="unemploymentInsAmount">0 VNĐ</span>
+                                <span class="result-label">BHTN (1%):</span>
+                                <span class="result-value" id="unemploymentInsAmount">0 VNĐ</span>
                             </div>
                             <div class="result-item">
-                                <span class="label">Tổng Bảo Hiểm:</span>
-                                <span class="value" id="totalInsurance">0 VNĐ</span>
+                                <span class="result-label">Công Đoàn (40.000 VNĐ):</span>
+                                <span class="result-value" id="unionFeeAmount">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Tổng Khấu Trừ:</span>
+                                <span class="result-value" id="totalDeductions">0 VNĐ</span>
                             </div>
                         </div>
                     </div>
@@ -761,40 +1217,68 @@
             </div>
         </div>
 
-        <!-- Modal chia sẻ -->
-        <div id="shareModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-share-alt"></i> Chia Sẻ Thông Tin Lương</h3>
-                    <button class="modal-close" id="closeShareModal">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <!-- Results Ad Slot -->
+        <div class="ad-container results-ad" style="text-align: center; margin: var(--spacing-xl) 0;">
+            <ins class="adsbygoogle"
+                 style="display:block; min-height: 250px;"
+                 data-ad-client="ca-pub-7587631210958149"
+                 data-ad-slot="9736528793"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-share-alt"></i> Chia Sẻ Thông Tin Lương
+                </h3>
+                <button class="modal-close" id="closeShareModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group-modal">
+                    <label>Nhập Mật Khẩu Bảo Vệ:</label>
+                    <input type="password" id="modalPassword" placeholder="Nhập mật khẩu..." />
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="sharePassword">Nhập Mật Khẩu Bảo Vệ:</label>
-                        <input type="password" id="sharePassword" class="form-input" placeholder="Nhập mật khẩu">
+                <div class="form-group-modal" id="linkSection" style="display: none;">
+                    <label>Link Chia Sẻ:</label>
+                    <div class="link-container">
+                        <input type="text" id="shareLink" class="link-input" readonly />
+                        <button class="btn btn-copy" id="copyLinkBtn">
+                            <i class="fas fa-copy"></i> Sao Chép
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="shareLink">Link Chia Sẻ:</label>
-                        <div class="link-container">
-                            <input type="text" id="shareLink" class="form-input" readonly>
-                            <button type="button" id="copyLinkBtn" class="btn btn-secondary">
-                                <i class="fas fa-copy"></i> Sao Chép
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="generateShareLinkBtn" class="btn btn-primary">
-                        <i class="fas fa-link"></i> Tạo Link
-                    </button>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="generateShareLinkBtn">
+                    <i class="fas fa-link"></i> Tạo Link Chia Sẻ
+                </button>
+            </div>
         </div>
+    </div>
 
-        <!-- Thông báo -->
-        <div id="notification" class="notification"></div>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Footer Ad Slot -->
+    <div class="ad-container footer-ad" style="text-align: center; margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color);">
+        <ins class="adsbygoogle"
+             style="display:block; min-height: 280px;"
+             data-ad-client="ca-pub-7587631210958149"
+             data-ad-slot="1243111129"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </div>
 
     <script src="script.js"></script>

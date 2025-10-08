@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://tinhluong.hau.xyz/sitemap.xml
+
+# Disallow crawling of sensitive files
+Disallow: /private/
+Disallow: /admin/
+Disallow: /config/
+Disallow: *.json
+Disallow: *.css
+Disallow: *.js
+
+# Allow crawling of main pages
+Allow: /
+Allow: /index.html

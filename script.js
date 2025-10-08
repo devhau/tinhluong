@@ -277,37 +277,42 @@ class SalaryCalculator {
     }
 
     calculateOvertimeSalary() {
-        const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary').value);
-        const hourlyRate = this.calculateHourlyRate(basicSalary);
+        try {
+            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
+            const hourlyRate = this.calculateHourlyRate(basicSalary);
 
-        const overtimeHours = {
-            normalDay: parseFloat(document.getElementById('normalDayOvertime').value) || 0,
-            normalNight: parseFloat(document.getElementById('normalNightOvertime').value) || 0,
-            dayOff: parseFloat(document.getElementById('dayOffOvertime').value) || 0,
-            nightDayOff: parseFloat(document.getElementById('nightDayOffOvertime').value) || 0,
-            holiday: parseFloat(document.getElementById('holidayOvertime').value) || 0,
-            nightHoliday: parseFloat(document.getElementById('nightHolidayOvertime').value) || 0
-        };
+            const overtimeHours = {
+                normalDay: parseFloat(document.getElementById('normalDayOvertime')?.value) || 0,
+                normalNight: parseFloat(document.getElementById('normalNightOvertime')?.value) || 0,
+                dayOff: parseFloat(document.getElementById('dayOffOvertime')?.value) || 0,
+                nightDayOff: parseFloat(document.getElementById('nightDayOffOvertime')?.value) || 0,
+                holiday: parseFloat(document.getElementById('holidayOvertime')?.value) || 0,
+                nightHoliday: parseFloat(document.getElementById('nightHolidayOvertime')?.value) || 0
+            };
 
-        let totalOvertimeSalary = 0;
-        const overtimeDetails = [];
+            let totalOvertimeSalary = 0;
+            const overtimeDetails = [];
 
-        for (const [type, hours] of Object.entries(overtimeHours)) {
-            if (hours > 0) {
-                const rate = this.overtimeRates[type];
-                const salary = Math.round(hours * hourlyRate * rate);
-                totalOvertimeSalary += salary;
+            for (const [type, hours] of Object.entries(overtimeHours)) {
+                if (hours > 0) {
+                    const rate = this.overtimeRates[type];
+                    const salary = Math.round(hours * hourlyRate * rate);
+                    totalOvertimeSalary += salary;
 
-                overtimeDetails.push({
-                    type: this.getOvertimeTypeName(type),
-                    hours: hours,
-                    rate: rate,
-                    salary: salary
-                });
+                    overtimeDetails.push({
+                        type: this.getOvertimeTypeName(type),
+                        hours: hours,
+                        rate: rate,
+                        salary: salary
+                    });
+                }
             }
-        }
 
-        return { totalOvertimeSalary, overtimeDetails };
+            return { totalOvertimeSalary, overtimeDetails };
+        } catch (error) {
+            console.error('Error calculating overtime salary:', error);
+            return { totalOvertimeSalary: 0, overtimeDetails: [] };
+        }
     }
 
     getOvertimeTypeName(type) {
@@ -323,82 +328,109 @@ class SalaryCalculator {
     }
 
     calculateNightShiftAllowance() {
-        const nightShiftHours = parseFloat(document.getElementById('nightShiftHours').value) || 0;
-        const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary').value);
-        const hourlyRate = this.calculateHourlyRate(basicSalary);
+        try {
+            const nightShiftHours = parseFloat(document.getElementById('nightShiftHours')?.value) || 0;
+            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
+            const hourlyRate = this.calculateHourlyRate(basicSalary);
 
-        return Math.round(nightShiftHours * hourlyRate * this.nightShiftRate);
+            return Math.round(nightShiftHours * hourlyRate * this.nightShiftRate);
+        } catch (error) {
+            console.error('Error calculating night shift allowance:', error);
+            return 0;
+        }
     }
 
     calculateInsurance() {
-        const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary').value);
-        const allowance = this.parseMoneyValue(document.getElementById('allowance').value);
+        try {
+            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
+            const allowance = this.parseMoneyValue(document.getElementById('allowance')?.value || '0');
 
-        // Bảo hiểm tính trên tổng lương cơ bản + phụ cấp
-        const insuranceBase = basicSalary + allowance;
+            // Bảo hiểm tính trên tổng lương cơ bản + phụ cấp
+            const insuranceBase = basicSalary + allowance;
 
-        const socialInsuranceRate = parseFloat(document.getElementById('socialInsurance').value) / 100 || 0.08;
-        const healthInsuranceRate = parseFloat(document.getElementById('healthInsurance').value) / 100 || 0.015;
-        const unemploymentInsuranceRate = parseFloat(document.getElementById('unemploymentInsurance').value) / 100 || 0.01;
+            const socialInsuranceRate = parseFloat(document.getElementById('socialInsurance')?.value) / 100 || 0.08;
+            const healthInsuranceRate = parseFloat(document.getElementById('healthInsurance')?.value) / 100 || 0.015;
+            const unemploymentInsuranceRate = parseFloat(document.getElementById('unemploymentInsurance')?.value) / 100 || 0.01;
 
-        // Công đoàn cố định 40.000 VNĐ
-        const unionFeeAmount = this.parseMoneyValue(document.getElementById('unionFee').value) || 40000;
+            // Công đoàn cố định 40.000 VNĐ
+            const unionFeeAmount = this.parseMoneyValue(document.getElementById('unionFee')?.value) || 40000;
 
-        const socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
-        const healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
-        const unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
-        const totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
-        const totalDeductions = totalInsurance + unionFeeAmount;
+            const socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
+            const healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
+            const unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
+            const totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
+            const totalDeductions = totalInsurance + unionFeeAmount;
 
-        return {
-            socialInsAmount,
-            healthInsAmount,
-            unemploymentInsAmount,
-            unionFeeAmount,
-            totalInsurance,
-            totalDeductions
-        };
+            return {
+                socialInsAmount,
+                healthInsAmount,
+                unemploymentInsAmount,
+                unionFeeAmount,
+                totalInsurance,
+                totalDeductions
+            };
+        } catch (error) {
+            console.error('Error calculating insurance:', error);
+            return {
+                socialInsAmount: 0,
+                healthInsAmount: 0,
+                unemploymentInsAmount: 0,
+                unionFeeAmount: 40000,
+                totalInsurance: 0,
+                totalDeductions: 40000
+            };
+        }
     }
 
     calculateTax(taxableIncome) {
-        // Áp dụng mức khởi điểm 11.4 triệu VNĐ và giảm trừ gia cảnh theo Luật Thuế TNCN mới nhất (2024)
-        const taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
+        try {
+            // Áp dụng mức khởi điểm 11.4 triệu VNĐ và giảm trừ gia cảnh theo Luật Thuế TNCN mới nhất (2024)
+            const taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
 
-        // Lấy số người phụ thuộc
-        const dependents = parseInt(document.getElementById('dependents').value) || 0;
+            // Lấy số người phụ thuộc
+            const dependents = parseInt(document.getElementById('dependents')?.value) || 0;
 
-        // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
-        const familyDeduction = taxFreeThreshold + (dependents * 4400000);
+            // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
+            const familyDeduction = taxFreeThreshold + (dependents * 4400000);
 
-        // Thu nhập chịu thuế thực tế (sau khi trừ giảm trừ gia cảnh)
-        const actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
+            // Thu nhập chịu thuế thực tế (sau khi trừ giảm trừ gia cảnh)
+            const actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
 
-        let tax = 0;
-        let remainingIncome = actualTaxableIncome;
+            let tax = 0;
+            let remainingIncome = actualTaxableIncome;
 
-        // Áp dụng biểu thuế lũy tiến từng phần
-        for (const bracket of this.taxBrackets) {
-            if (remainingIncome <= 0) break;
+            // Áp dụng biểu thuế lũy tiến từng phần
+            for (const bracket of this.taxBrackets) {
+                if (remainingIncome <= 0) break;
 
-            const taxableInBracket = Math.min(remainingIncome, bracket.max - bracket.min);
-            tax += taxableInBracket * bracket.rate;
-            remainingIncome -= taxableInBracket;
+                const taxableInBracket = Math.min(remainingIncome, bracket.max - bracket.min);
+                tax += taxableInBracket * bracket.rate;
+                remainingIncome -= taxableInBracket;
+            }
+
+            return {
+                tax: Math.round(tax),
+                familyDeduction: familyDeduction,
+                actualTaxableIncome: actualTaxableIncome,
+                dependents: dependents
+            };
+        } catch (error) {
+            console.error('Error calculating tax:', error);
+            return {
+                tax: 0,
+                familyDeduction: 11400000,
+                actualTaxableIncome: Math.max(0, taxableIncome - 11400000),
+                dependents: 0
+            };
         }
-
-        return {
-            tax: Math.round(tax),
-            familyDeduction: familyDeduction,
-            actualTaxableIncome: actualTaxableIncome,
-            dependents: dependents
-        };
     }
 
     calculateSalary() {
         try {
             // Get basic inputs
-            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary').value);
-            const allowance = this.parseMoneyValue(document.getElementById('allowance').value);
-            const otherIncome = this.parseMoneyValue(document.getElementById('otherIncome').value);
+            const basicSalary = this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0');
+            const allowance = this.parseMoneyValue(document.getElementById('allowance')?.value || '0');
+            const otherIncome = this.parseMoneyValue(document.getElementById('otherIncome')?.value || '0');
 
             // Calculate components
             const basicTotal = basicSalary + allowance;
@@ -685,21 +717,21 @@ class SalaryCalculator {
 
             // Get current form data
             const formData = {
-                basicSalary: this.parseMoneyValue(document.getElementById('basicSalary').value),
-                allowance: this.parseMoneyValue(document.getElementById('allowance').value),
-                nightShiftHours: parseFloat(document.getElementById('nightShiftHours').value) || 0,
-                otherIncome: this.parseMoneyValue(document.getElementById('otherIncome').value),
-                normalDayOvertime: parseFloat(document.getElementById('normalDayOvertime').value) || 0,
-                normalNightOvertime: parseFloat(document.getElementById('normalNightOvertime').value) || 0,
-                dayOffOvertime: parseFloat(document.getElementById('dayOffOvertime').value) || 0,
-                nightDayOffOvertime: parseFloat(document.getElementById('nightDayOffOvertime').value) || 0,
-                holidayOvertime: parseFloat(document.getElementById('holidayOvertime').value) || 0,
-                nightHolidayOvertime: parseFloat(document.getElementById('nightHolidayOvertime').value) || 0,
-                socialInsurance: parseFloat(document.getElementById('socialInsurance').value) || 8,
-                healthInsurance: parseFloat(document.getElementById('healthInsurance').value) || 1.5,
-                unemploymentInsurance: parseFloat(document.getElementById('unemploymentInsurance').value) || 1,
-                unionFee: this.parseMoneyValue(document.getElementById('unionFee').value) || 40000,
-                dependents: parseInt(document.getElementById('dependents').value) || 0
+                basicSalary: this.parseMoneyValue(document.getElementById('basicSalary')?.value || '0'),
+                allowance: this.parseMoneyValue(document.getElementById('allowance')?.value || '0'),
+                nightShiftHours: parseFloat(document.getElementById('nightShiftHours')?.value) || 0,
+                otherIncome: this.parseMoneyValue(document.getElementById('otherIncome')?.value || '0'),
+                normalDayOvertime: parseFloat(document.getElementById('normalDayOvertime')?.value) || 0,
+                normalNightOvertime: parseFloat(document.getElementById('normalNightOvertime')?.value) || 0,
+                dayOffOvertime: parseFloat(document.getElementById('dayOffOvertime')?.value) || 0,
+                nightDayOffOvertime: parseFloat(document.getElementById('nightDayOffOvertime')?.value) || 0,
+                holidayOvertime: parseFloat(document.getElementById('holidayOvertime')?.value) || 0,
+                nightHolidayOvertime: parseFloat(document.getElementById('nightHolidayOvertime')?.value) || 0,
+                socialInsurance: parseFloat(document.getElementById('socialInsurance')?.value) || 8,
+                healthInsurance: parseFloat(document.getElementById('healthInsurance')?.value) || 1.5,
+                unemploymentInsurance: parseFloat(document.getElementById('unemploymentInsurance')?.value) || 1,
+                unionFee: this.parseMoneyValue(document.getElementById('unionFee')?.value || '40000'),
+                dependents: parseInt(document.getElementById('dependents')?.value) || 0
             };
 
             // Create data object with password

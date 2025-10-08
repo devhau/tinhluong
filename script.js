@@ -29,6 +29,14 @@ class SalaryCalculator {
         this.init();
     }
 
+    init() {
+        this.checkForSharedData();
+        this.loadFromLocalStorage();
+        this.setupEventListeners();
+        this.setupTheme();
+        this.formatMoneyInputs();
+    }
+
     // Safari-compatible helper functions
     safeGetElement(id) {
         try {
@@ -48,27 +56,41 @@ class SalaryCalculator {
                 console.warn('Element with id \'' + id + '\' not found');
             }
         } catch (e) {
-            console.warn('Error setting text for element:', id, e);
+            // Error handled silently
         }
     }
 
     safeGetValue(id, defaultValue) {
         try {
-            if (defaultValue === undefined) defaultValue = '';
             var element = this.safeGetElement(id);
-            return element ? element.value : defaultValue;
-        } catch (e) {
-            console.warn('Error getting value for element:', id, e);
-            return defaultValue || '';
-        }
-    }
+            if (!element) {
+                console.warn('Element with id "' + id + '" not found, using default:', defaultValue);
+                return defaultValue;
+            }
 
-    init() {
-        this.checkForSharedData();
-        this.loadFromLocalStorage();
-        this.setupEventListeners();
-        this.setupTheme();
-        this.formatMoneyInputs();
+            var value = element.value;
+
+            // Xử lý giá trị đặc biệt cho các trường hợp
+            if (id === 'workingDays' || id === 'dependents') {
+                var numericValue = parseInt(value);
+                return isNaN(numericValue) ? defaultValue : numericValue;
+            }
+
+            if (id.includes('Overtime')) {
+                var floatValue = parseFloat(value);
+                return isNaN(floatValue) ? defaultValue : floatValue;
+            }
+
+            if (id.includes('Insurance')) {
+                var floatValue = parseFloat(value);
+                return isNaN(floatValue) ? defaultValue : floatValue;
+            }
+
+            return value || defaultValue;
+        } catch (error) {
+            console.error('Error getting value for', id, error);
+            return defaultValue;
+        }
     }
 
     setupAdSense() {
@@ -306,8 +328,15 @@ class SalaryCalculator {
                 if (input.id === 'basicSalary' || input.id === 'allowance' || input.id === 'otherIncome' || input.id === 'unionFee') {
                     var value = input.value.replace(/[^\d]/g, '');
                     if (value) {
-                        value = parseInt(value).toLocaleString('vi-VN');
-                        input.value = value;
+                        var numericValue = parseInt(value);
+                        if (!isNaN(numericValue) && numericValue >= 0) {
+                            value = numericValue.toLocaleString('vi-VN');
+                            input.value = value;
+                        } else {
+                            input.value = '';
+                        }
+                    } else {
+                        input.value = '';
                     }
                 }
             }
@@ -317,12 +346,37 @@ class SalaryCalculator {
     }
 
     parseMoneyValue(value) {
-        return parseInt(value.replace(/[^\d]/g, '')) || 0;
+        if (value === null || value === undefined || value === '') {
+            return 0;
+        }
+
+        var numericValue = parseInt(value.toString().replace(/[^\d]/g, ''));
+
+        // Kiểm tra nếu parseInt trả về NaN
+        if (isNaN(numericValue)) {
+            console.warn('Invalid money value:', value, 'returning 0');
+            return 0;
+        }
+
+        return numericValue;
     }
 
     calculateHourlyRate(basicSalary) {
         // Tính tiền 1 giờ làm việc: Lương cơ bản / số ngày làm việc / 8 giờ
         var workingDays = parseInt(this.safeGetValue('workingDays', '26')) || 26;
+
+        // Đảm bảo workingDays không phải 0 hoặc âm
+        if (workingDays <= 0 || isNaN(workingDays)) {
+            workingDays = 26; // Giá trị mặc định
+            console.warn('Invalid working days, using default: 26');
+        }
+
+        // Đảm bảo basicSalary hợp lệ
+        if (basicSalary <= 0 || isNaN(basicSalary)) {
+            console.warn('Invalid basic salary for hourly rate calculation');
+            return 0;
+        }
+
         return Math.round(basicSalary / workingDays / 8);
     }
 
@@ -330,6 +384,12 @@ class SalaryCalculator {
         try {
             var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
             var hourlyRate = this.calculateHourlyRate(basicSalary);
+
+            // Kiểm tra hourlyRate hợp lệ
+            if (hourlyRate <= 0 || isNaN(hourlyRate)) {
+                console.warn('Invalid hourly rate, returning zero overtime');
+                return { totalOvertimeSalary: 0, overtimeDetails: [] };
+            }
 
             var overtimeHours = {
                 normalDay: parseFloat(this.safeGetValue('normalDayOvertime', '0')),
@@ -346,7 +406,7 @@ class SalaryCalculator {
             for (var type in overtimeHours) {
                 if (overtimeHours.hasOwnProperty(type)) {
                     var hours = overtimeHours[type];
-                    if (hours > 0) {
+                    if (hours > 0 && !isNaN(hours)) {
                         var rate = this.overtimeRates[type];
                         var salary = Math.round(hours * hourlyRate * rate);
                         totalOvertimeSalary += salary;
@@ -386,6 +446,17 @@ class SalaryCalculator {
             var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
             var hourlyRate = this.calculateHourlyRate(basicSalary);
 
+            // Kiểm tra các giá trị đầu vào
+            if (isNaN(nightShiftHours) || nightShiftHours < 0) {
+                console.warn('Invalid night shift hours:', nightShiftHours);
+                nightShiftHours = 0;
+            }
+
+            if (hourlyRate <= 0 || isNaN(hourlyRate)) {
+                console.warn('Invalid hourly rate for night shift calculation');
+                return 0;
+            }
+
             return Math.round(nightShiftHours * hourlyRate * this.nightShiftRate);
         } catch (error) {
             console.error('Error calculating night shift allowance:', error);
@@ -404,6 +475,11 @@ class SalaryCalculator {
             var socialInsuranceRate = parseFloat(this.safeGetValue('socialInsurance', '8')) / 100 || 0.08;
             var healthInsuranceRate = parseFloat(this.safeGetValue('healthInsurance', '1.5')) / 100 || 0.015;
             var unemploymentInsuranceRate = parseFloat(this.safeGetValue('unemploymentInsurance', '1')) / 100 || 0.01;
+
+            // Kiểm tra tỷ lệ hợp lệ
+            if (isNaN(socialInsuranceRate) || socialInsuranceRate < 0) socialInsuranceRate = 0.08;
+            if (isNaN(healthInsuranceRate) || healthInsuranceRate < 0) healthInsuranceRate = 0.015;
+            if (isNaN(unemploymentInsuranceRate) || unemploymentInsuranceRate < 0) unemploymentInsuranceRate = 0.01;
 
             // Công đoàn cố định 40.000 VNĐ
             var unionFeeAmount = this.parseMoneyValue(this.safeGetValue('unionFee', '40000'));
@@ -442,6 +518,12 @@ class SalaryCalculator {
 
             // Lấy số người phụ thuộc
             var dependents = parseInt(this.safeGetValue('dependents', '0'));
+
+            // Kiểm tra dependents hợp lệ
+            if (isNaN(dependents) || dependents < 0) {
+                console.warn('Invalid dependents value:', dependents, 'setting to 0');
+                dependents = 0;
+            }
 
             // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
             var familyDeduction = taxFreeThreshold + (dependents * 4400000);
@@ -535,6 +617,14 @@ class SalaryCalculator {
 
     updateResults(data) {
         try {
+            // Helper function để format số an toàn
+            var safeFormatNumber = function(num) {
+                if (isNaN(num) || num === null || num === undefined) {
+                    return '0';
+                }
+                return num.toLocaleString('vi-VN');
+            };
+
             // Update overtime details
             var overtimeDetailsEl = this.safeGetElement('overtimeDetails');
             if (overtimeDetailsEl) {
@@ -545,7 +635,7 @@ class SalaryCalculator {
                         var detail = data.overtimeDetails[i];
                         var detailEl = document.createElement('div');
                         detailEl.className = 'result-item';
-                        detailEl.innerHTML = '<span class="result-label">' + detail.type + ' (' + detail.hours + 'h):</span><span class="result-value">' + detail.salary.toLocaleString('vi-VN') + ' VNĐ</span>';
+                        detailEl.innerHTML = '<span class="result-label">' + detail.type + ' (' + detail.hours + 'h):</span><span class="result-value">' + safeFormatNumber(detail.salary) + ' VNĐ</span>';
                         overtimeDetailsEl.appendChild(detailEl);
                     }
                 } else {
@@ -553,24 +643,24 @@ class SalaryCalculator {
                 }
             }
 
-            // Update summary
-            this.safeSetText('basicTotal', data.basicTotal.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('nightAllowance', data.nightAllowance.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('totalOvertime', data.totalOvertimeSalary.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('grossSalary', data.grossSalary.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('totalDeductionsDisplay', data.insurance.totalDeductions.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('taxableSalary', data.taxResult.actualTaxableIncome.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('familyDeduction', data.taxResult.familyDeduction.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('dependentsCount', data.taxResult.dependents + ' người');
-            this.safeSetText('incomeTax', data.taxResult.tax.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('netSalary', data.netSalary.toLocaleString('vi-VN') + ' VNĐ');
+            // Update summary với safe formatting
+            this.safeSetText('basicTotal', safeFormatNumber(data.basicTotal) + ' VNĐ');
+            this.safeSetText('nightAllowance', safeFormatNumber(data.nightAllowance) + ' VNĐ');
+            this.safeSetText('totalOvertime', safeFormatNumber(data.totalOvertimeSalary) + ' VNĐ');
+            this.safeSetText('grossSalary', safeFormatNumber(data.grossSalary) + ' VNĐ');
+            this.safeSetText('totalDeductionsDisplay', safeFormatNumber(data.insurance.totalDeductions) + ' VNĐ');
+            this.safeSetText('taxableSalary', safeFormatNumber(data.taxResult.actualTaxableIncome) + ' VNĐ');
+            this.safeSetText('familyDeduction', safeFormatNumber(data.taxResult.familyDeduction) + ' VNĐ');
+            this.safeSetText('dependentsCount', (data.taxResult.dependents || 0) + ' người');
+            this.safeSetText('incomeTax', safeFormatNumber(data.taxResult.tax) + ' VNĐ');
+            this.safeSetText('netSalary', safeFormatNumber(data.netSalary) + ' VNĐ');
 
             // Update insurance details
-            this.safeSetText('socialInsAmount', data.insurance.socialInsAmount.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('healthInsAmount', data.insurance.healthInsAmount.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('unemploymentInsAmount', data.insurance.unemploymentInsAmount.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('unionFeeAmount', data.insurance.unionFeeAmount.toLocaleString('vi-VN') + ' VNĐ');
-            this.safeSetText('totalDeductions', data.insurance.totalDeductions.toLocaleString('vi-VN') + ' VNĐ');
+            this.safeSetText('socialInsAmount', safeFormatNumber(data.insurance.socialInsAmount) + ' VNĐ');
+            this.safeSetText('healthInsAmount', safeFormatNumber(data.insurance.healthInsAmount) + ' VNĐ');
+            this.safeSetText('unemploymentInsAmount', safeFormatNumber(data.insurance.unemploymentInsAmount) + ' VNĐ');
+            this.safeSetText('unionFeeAmount', safeFormatNumber(data.insurance.unionFeeAmount) + ' VNĐ');
+            this.safeSetText('totalDeductions', safeFormatNumber(data.insurance.totalDeductions) + ' VNĐ');
 
             // Show results section
             var resultsSection = this.safeGetElement('resultsSection');
@@ -923,6 +1013,23 @@ class SalaryCalculator {
             console.error('Error unlocking shared data:', error);
             this.showNotification('Có lỗi xảy ra khi mở khóa!', 'error');
         }
+    }
+
+    goHome() {
+        // Hide ad containers when going home
+        try {
+            var adContainers = document.querySelectorAll('.ad-container');
+            for (var i = 0; i < adContainers.length; i++) {
+                var container = adContainers[i];
+                container.classList.remove('ad-loaded');
+                container.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error hiding ad containers:', error);
+        }
+
+        // Redirect to clean URL
+        window.location.href = window.location.pathname;
     }
 
     goHome() {

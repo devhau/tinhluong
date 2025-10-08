@@ -11,21 +11,4 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
-
-    <!-- Trang chính -->
-    <url>
-        <loc>https://tinhluong.hau.xyz/index.html</loc>
-        <lastmod>2024-01-01T00:00:00+07:00</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <!-- Công cụ tính lương -->
-    <url>
-        <loc>https://tinhluong.hau.xyz/#calculator</loc>
-        <lastmod>2024-01-01T00:00:00+07:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-    </url>
-
 </urlset>

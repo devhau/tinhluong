@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Tính Lương Thực Nhận</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #10b981;
+            --secondary-hover: #059669;
+            --accent-color: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #22c55e;
+
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1f2937;
+            --light-text-secondary: #6b7280;
+            --light-border: #e5e7eb;
+            --light-input: #ffffff;
+
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-text-secondary: #94a3b8;
+            --dark-border: #334155;
+            --dark-input: #1e293b;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--light-text);
+            background-color: var(--light-bg);
+            transition: var(--transition);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .dark-theme {
+            --light-bg: var(--dark-bg);
+            --light-card: var(--dark-card);
+            --light-text: var(--dark-text);
+            --light-text-secondary: var(--dark-text-secondary);
+            --light-border: var(--dark-border);
+            --light-input: var(--dark-input);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--light-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--light-border);
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            font-size: 2rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            padding: 0.75rem;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--light-text);
+            background-color: var(--light-input);
+            border: 1px solid var(--light-border);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--light-border);
+            transform: scale(1.05);
+        }
+
+        /* Calculator Wrapper */
+        .calculator-wrapper {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: var(--light-card);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-section h2 i {
+            color: var(--primary-color);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--light-input);
+            color: var(--light-text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+        }
+
+        .form-input:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Money Input */
+        .money-input {
+            position: relative;
+        }
+
+        .money-input::placeholder {
+            color: var(--light-text-secondary);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-height: 3rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--light-border);
+            color: var(--light-text);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, var(--accent-hover), #6d28d9);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .results-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .results-section h2 i {
+            color: var(--secondary-color);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .result-card {
+            background: var(--light-card);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
+        }
+
+        .result-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-card h3 i {
+            color: var(--primary-color);
+        }
+
+        .result-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item .label {
+            font-weight: 500;
+            color: var(--light-text);
+        }
+
+        .result-item .value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .result-item.highlight {
+            background: linear-gradient(135deg, rgb(59 130 246 / 0.1), rgb(147 197 253 / 0.1));
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            border: 2px solid rgb(59 130 246 / 0.2);
+        }
+
+        .result-item.highlight .label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .result-item.highlight .value {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--light-card);
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--light-border);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header h3 i {
+            color: var(--accent-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light-text-secondary);
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background-color: var(--light-border);
+            color: var(--light-text);
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .link-container {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .link-container .btn {
+            flex: none;
+            min-width: auto;
+            padding: 0.75rem 1rem;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .calculator-wrapper {
+                gap: 1rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: auto;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .result-card {
+                padding: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+
+            .link-container {
+                flex-direction: column;
+            }
+
+            .notification {
+                right: 1rem;
+                bottom: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-section {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .header h1 i {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Focus States */
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.3);
+        }
+
+        /* Print Styles */
+        @media print {
+            .header .theme-toggle,
+            .form-actions,
+            .modal,
+            .notification {
+                display: none !important;
+            }
+
+            .form-section,
+            .result-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-calculator"></i> Máy Tính Lương Thực Nhận</h1>
+            <button id="themeToggle" class="theme-toggle" aria-label="Chuyển đổi theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="calculator-wrapper">
+            <form class="salary-form" id="salaryForm">
+                <!-- Thông tin lương cơ bản -->
+                <div class="form-section">
+                    <h2><i class="fas fa-money-bill-wave"></i> Thông Tin Lương Cơ Bản</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="basicSalary">Lương Cơ Bản (VNĐ)</label>
+                            <input type="text" id="basicSalary" class="form-input money-input" placeholder="5,000,000" value="5000000">
+                        </div>
+                        <div class="form-group">
+                            <label for="allowance">Phụ Cấp (VNĐ)</label>
+                            <input type="text" id="allowance" class="form-input money-input" placeholder="1,500,000" value="1500000">
+                        </div>
+                        <div class="form-group">
+                            <label for="nightShiftHours">Số Giờ Làm Đêm</label>
+                            <input type="number" id="nightShiftHours" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="otherIncome">Thu Nhập Khác (VNĐ)</label>
+                            <input type="text" id="otherIncome" class="form-input money-input" placeholder="0" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin tăng ca -->
+                <div class="form-section">
+                    <h2><i class="fas fa-clock"></i> Thông Tin Tăng Ca</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="normalDayOvertime">Ngày Thường (150%)</label>
+                            <input type="number" id="normalDayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="normalNightOvertime">Đêm Thường (200%)</label>
+                            <input type="number" id="normalNightOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="dayOffOvertime">Ngày Nghỉ (200%)</label>
+                            <input type="number" id="dayOffOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="nightDayOffOvertime">Đêm Ngày Nghỉ (270%)</label>
+                            <input type="number" id="nightDayOffOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayOvertime">Ngày Lễ (300%)</label>
+                            <input type="number" id="holidayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="nightHolidayOvertime">Đêm Lễ (390%)</label>
+                            <input type="number" id="nightHolidayOvertime" class="form-input" placeholder="0" min="0" step="0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin bảo hiểm -->
+                <div class="form-section">
+                    <h2><i class="fas fa-shield-alt"></i> Thông Tin Đóng Bảo Hiểm</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="socialInsurance">Bảo Hiểm Xã Hội (%)</label>
+                            <input type="number" id="socialInsurance" class="form-input" placeholder="8" min="0" max="100" step="0.1" value="8">
+                        </div>
+                        <div class="form-group">
+                            <label for="healthInsurance">Bảo Hiểm Y Tế (%)</label>
+                            <input type="number" id="healthInsurance" class="form-input" placeholder="1.5" min="0" max="100" step="0.1" value="1.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="unemploymentInsurance">Bảo Hiểm Thất Nghiệp (%)</label>
+                            <input type="number" id="unemploymentInsurance" class="form-input" placeholder="1" min="0" max="100" step="0.1" value="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="form-actions">
+                    <button type="button" id="calculateBtn" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Tính Lương
+                    </button>
+                    <button type="button" id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> Khôi Phục Mặc Định
+                    </button>
+                    <button type="button" id="shareBtn" class="btn btn-accent">
+                        <i class="fas fa-share"></i> Chia Sẻ
+                    </button>
+                </div>
+            </form>
+
+            <!-- Kết quả tính toán -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2><i class="fas fa-chart-bar"></i> Kết Quả Tính Toán</h2>
+
+                <div class="results-grid">
+                    <!-- Chi tiết tăng ca -->
+                    <div class="result-card">
+                        <h3><i class="fas fa-plus-circle"></i> Chi Tiết Tăng Ca</h3>
+                        <div class="result-details" id="overtimeDetails">
+                            <!-- Nội dung sẽ được thêm bằng JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Tổng quan lương -->
+                    <div class="result-card">
+                        <h3><i class="fas fa-money-check-alt"></i> Tổng Quan Lương</h3>
+                        <div class="result-summary">
+                            <div class="result-item">
+                                <span class="label">Lương Cơ Bản + Phụ Cấp:</span>
+                                <span class="value" id="basicTotal">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Phụ Cấp Đêm:</span>
+                                <span class="value" id="nightAllowance">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Tổng Lương Tăng Ca:</span>
+                                <span class="value" id="totalOvertime">0 VNĐ</span>
+                            </div>
+                            <div class="result-item highlight">
+                                <span class="label">Tổng Lương Trước Thuế:</span>
+                                <span class="value" id="grossSalary">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Lương Chịu Thuế:</span>
+                                <span class="value" id="taxableSalary">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Thuế TNCN:</span>
+                                <span class="value" id="incomeTax">0 VNĐ</span>
+                            </div>
+                            <div class="result-item highlight">
+                                <span class="label">Lương Thực Nhận:</span>
+                                <span class="value" id="netSalary">0 VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chi tiết bảo hiểm -->
+                    <div class="result-card">
+                        <h3><i class="fas fa-file-invoice-dollar"></i> Chi Tiết Bảo Hiểm</h3>
+                        <div class="result-summary">
+                            <div class="result-item">
+                                <span class="label">BHXH (8%):</span>
+                                <span class="value" id="socialInsAmount">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">BHYT (1.5%):</span>
+                                <span class="value" id="healthInsAmount">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">BHTN (1%):</span>
+                                <span class="value" id="unemploymentInsAmount">0 VNĐ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">Tổng Bảo Hiểm:</span>
+                                <span class="value" id="totalInsurance">0 VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal chia sẻ -->
+        <div id="shareModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-share-alt"></i> Chia Sẻ Thông Tin Lương</h3>
+                    <button class="modal-close" id="closeShareModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="sharePassword">Nhập Mật Khẩu Bảo Vệ:</label>
+                        <input type="password" id="sharePassword" class="form-input" placeholder="Nhập mật khẩu">
+                    </div>
+                    <div class="form-group">
+                        <label for="shareLink">Link Chia Sẻ:</label>
+                        <div class="link-container">
+                            <input type="text" id="shareLink" class="form-input" readonly>
+                            <button type="button" id="copyLinkBtn" class="btn btn-secondary">
+                                <i class="fas fa-copy"></i> Sao Chép
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="generateShareLinkBtn" class="btn btn-primary">
+                        <i class="fas fa-link"></i> Tạo Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông báo -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

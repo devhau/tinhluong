@@ -6,354 +6,370 @@
     <title>Tính Lương Thực Nhận</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --input-bg: #f0f0f0;
-            --button-bg: #007bff;
-            --button-text: #ffffff;
-            --accent-color: #28a745;
-            --error-color: #dc3545;
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1a1a1a;
+            --light-text: #333;
+            --dark-text: #f0f0f0;
+            --card-bg: #fff;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
         }
-        body.dark {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --input-bg: #333333;
-            --button-bg: #0056b3;
-            --button-text: #ffffff;
-            --accent-color: #1e7e34;
-            --error-color: #c82333;
+
+        .dark-mode {
+            --light-bg: #121212;
+            --dark-bg: #1a1a1a;
+            --light-text: #f0f0f0;
+            --dark-text: #f0f0f0;
+            --card-bg: #2d2d2d;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
+        }
+
+        header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .card-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
             align-items: center;
         }
-        .container {
-            max-width: 800px;
-            width: 100%;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background-color: var(--bg-color);
+
+        .card-title i {
+            margin-right: 8px;
         }
-        h1 {
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group-text {
+            background-color: #e9ecef;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-right: none;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            color: #495057;
+        }
+
+        .dark-mode .input-group-text {
+            background-color: #3d3d3d;
+            border-color: #555;
+            color: var(--dark-text);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: var(--card-bg);
+            color: var(--light-text);
+        }
+
+        .dark-mode input, .dark-mode select {
+            border-color: #555;
+        }
+
+        .input-group input {
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            flex: 1;
+        }
+
+        .overtime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .overtime-item {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .dark-mode .overtime-item {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .overtime-label {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .overtime-rate {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
+            color: white;
             text-align: center;
         }
-        form {
-            display: grid;
-            gap: 15px;
+
+        .dark-mode .result-card {
+            background: linear-gradient(135deg, #2c3e50, #1a1a1a);
         }
-        label {
+
+        .result-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .breakdown {
+            margin-top: 20px;
+        }
+
+        .breakdown-item {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
+
+        .breakdown-label {
+            font-weight: 500;
         }
+
+        .breakdown-value {
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
         button {
-            padding: 10px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
+            padding: 10px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            flex: 1;
         }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
         button:hover {
             opacity: 0.9;
+            transform: translateY(-2px);
         }
-        #results {
+
+        .share-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .share-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .share-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .share-input input {
+            flex: 1;
+        }
+
+        .tax-info {
             margin-top: 20px;
             padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: var(--input-bg);
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--danger-color);
         }
-        .theme-toggle {
+
+        .dark-mode .tax-info {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+
+        .tax-title {
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .hourly-rate {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+
+        .modal {
+            display: none;
             position: fixed;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
-        #share-section {
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
             margin-top: 20px;
         }
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</div>
     <div class="container">
-        <h1>Tính Lương Thực Nhận</h1>
-        <form id="salaryForm">
-            <label>
-                Lương cơ bản (VND):
-                <input type="text" id="basicSalary" value="5000000">
-            </label>
-            <label>
-                Phụ cấp chung (VND):
-                <input type="text" id="allowance" value="1500000">
-            </label>
-            <label>
-                Giờ tăng ca ngày thường (150%):
-                <input type="number" id="otWeekday" value="0" min="0">
-            </label>
-            <label>
-                Giờ đêm thường (200%):
-                <input type="number" id="otNightWeekday" value="0" min="0">
-            </label>
-            <label>
-                Giờ ngày nghỉ (200%):
-                <input type="number" id="otRestDay" value="0" min="0">
-            </label>
-            <label>
-                Giờ đêm ngày nghỉ (270%):
-                <input type="number" id="otNightRestDay" value="0" min="0">
-            </label>
-            <label>
-                Giờ ngày lễ (300%):
-                <input type="number" id="otHoliday" value="0" min="0">
-            </label>
-            <label>
-                Giờ đêm ngày lễ (390%):
-                <input type="number" id="otNightHoliday" value="0" min="0">
-            </label>
-            <button type="button" onclick="calculateSalary()">Tính lương</button>
-            <button type="button" onclick="resetToDefault()">Khôi phục mặc định</button>
-        </form>
-        <div id="results"></div>
-        <div id="share-section">
-            <h2>Chia sẻ thông tin</h2>
-            <label>
-                Mật khẩu (để mã hóa):
-                <input type="password" id="sharePassword">
-            </label>
-            <button type="button" onclick="generateShareLink()">Tạo link chia sẻ</button>
-            <p id="shareLink"></p>
-        </div>
-    </div>
+        <header>
+            <h1>💰 Tính Lương Thực Nhận</h1>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </header>
 
-    <script>
-        // Constants
-        const STANDARD_HOURS_PER_MONTH = 176; // 22 days * 8 hours
-        const NIGHT_ALLOWANCE_RATE = 0.30; // 30%
-
-        // Load from localStorage or URL
-        window.onload = function() {
-            loadFromLocalStorage();
-            loadFromURL();
-            toggleTheme(); // Initial theme check
-        };
-
-        // Theme toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
-
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark');
-        }
-
-        // Format number with thousands separator
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        // Parse formatted number
-        function parseNumber(str) {
-            return parseFloat(str.replace(/\./g, '')) || 0;
-        }
-
-        // Auto format inputs
-        const moneyInputs = ['basicSalary', 'allowance'];
-        moneyInputs.forEach(id => {
-            const input = document.getElementById(id);
-            input.addEventListener('input', () => {
-                const value = parseNumber(input.value);
-                input.value = formatNumber(value);
-            });
-        });
-
-        // Calculate salary
-        function calculateSalary() {
-            const basic = parseNumber(document.getElementById('basicSalary').value);
-            const allowance = parseNumber(document.getElementById('allowance').value);
-            const otWeekday = parseFloat(document.getElementById('otWeekday').value) || 0;
-            const otNightWeekday = parseFloat(document.getElementById('otNightWeekday').value) || 0;
-            const otRestDay = parseFloat(document.getElementById('otRestDay').value) || 0;
-            const otNightRestDay = parseFloat(document.getElementById('otNightRestDay').value) || 0;
-            const otHoliday = parseFloat(document.getElementById('otHoliday').value) || 0;
-            const otNightHoliday = parseFloat(document.getElementById('otNightHoliday').value) || 0;
-
-            const hourlyRate = basic / STANDARD_HOURS_PER_MONTH;
-
-            // Overtime calculations
-            const otWeekdayAmount = otWeekday * hourlyRate * 1.5;
-            const otNightWeekdayAmount = otNightWeekday * hourlyRate * 2.0;
-            const otRestDayAmount = otRestDay * hourlyRate * 2.0;
-            const otNightRestDayAmount = otNightRestDay * hourlyRate * 2.7;
-            const otHolidayAmount = otHoliday * hourlyRate * 3.0;
-            const otNightHolidayAmount = otNightHoliday * hourlyRate * 3.9;
-
-            // Total night hours for allowance
-            const totalNightHours = otNightWeekday + otNightRestDay + otNightHoliday;
-            const nightAllowance = totalNightHours * hourlyRate * NIGHT_ALLOWANCE_RATE;
-
-            // Total overtime
-            const totalOvertime = otWeekdayAmount + otNightWeekdayAmount + otRestDayAmount + otNightRestDayAmount + otHolidayAmount + otNightHolidayAmount;
-
-            // Net salary
-            const netSalary = basic + allowance + totalOvertime + nightAllowance;
-
-            // Display results
-            const results = document.getElementById('results');
-            results.innerHTML = `
-                <p><strong>Tiền 1 giờ làm chuẩn:</strong> ${formatNumber(Math.round(hourlyRate))} VND</p>
-                <p><strong>Lương cơ bản:</strong> ${formatNumber(basic)} VND</p>
-                <p><strong>Phụ cấp chung:</strong> ${formatNumber(allowance)} VND</p>
-                <p><strong>Tăng ca ngày thường (150%):</strong> ${formatNumber(Math.round(otWeekdayAmount))} VND (${otWeekday} giờ)</p>
-                <p><strong>Đêm thường (200%):</strong> ${formatNumber(Math.round(otNightWeekdayAmount))} VND (${otNightWeekday} giờ)</p>
-                <p><strong>Ngày nghỉ (200%):</strong> ${formatNumber(Math.round(otRestDayAmount))} VND (${otRestDay} giờ)</p>
-                <p><strong>Đêm ngày nghỉ (270%):</strong> ${formatNumber(Math.round(otNightRestDayAmount))} VND (${otNightRestDay} giờ)</p>
-                <p><strong>Ngày lễ (300%):</strong> ${formatNumber(Math.round(otHolidayAmount))} VND (${otHoliday} giờ)</p>
-                <p><strong>Đêm ngày lễ (390%):</strong> ${formatNumber(Math.round(otNightHolidayAmount))} VND (${otNightHoliday} giờ)</p>
-                <p><strong>Phụ cấp đêm (30%):</strong> ${formatNumber(Math.round(nightAllowance))} VND (${totalNightHours} giờ)</p>
-                <p><strong>Tổng lương thực nhận:</strong> ${formatNumber(Math.round(netSalary))} VND</p>
-            `;
-
-            // Save to localStorage
-            saveToLocalStorage();
-        }
-
-        // Save to localStorage
-        function saveToLocalStorage() {
-            const data = {
-                basicSalary: document.getElementById('basicSalary').value,
-                allowance: document.getElementById('allowance').value,
-                otWeekday: document.getElementById('otWeekday').value,
-                otNightWeekday: document.getElementById('otNightWeekday').value,
-                otRestDay: document.getElementById('otRestDay').value,
-                otNightRestDay: document.getElementById('otNightRestDay').value,
-                otHoliday: document.getElementById('otHoliday').value,
-                otNightHoliday: document.getElementById('otNightHoliday').value
-            };
-            localStorage.setItem('salaryData', JSON.stringify(data));
-        }
-
-        // Load from localStorage
-        function loadFromLocalStorage() {
-            const savedData = localStorage.getItem('salaryData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                document.getElementById('basicSalary').value = data.basicSalary;
-                document.getElementById('allowance').value = data.allowance;
-                document.getElementById('otWeekday').value = data.otWeekday;
-                document.getElementById('otNightWeekday').value = data.otNightWeekday;
-                document.getElementById('otRestDay').value = data.otRestDay;
-                document.getElementById('otNightRestDay').value = data.otNightRestDay;
-                document.getElementById('otHoliday').value = data.otHoliday;
-                document.getElementById('otNightHoliday').value = data.otNightHoliday;
-            }
-        }
-
-        // Reset to default
-        function resetToDefault() {
-            document.getElementById('basicSalary').value = '5000000';
-            document.getElementById('allowance').value = '1500000';
-            document.getElementById('otWeekday').value = 0;
-            document.getElementById('otNightWeekday').value = 0;
-            document.getElementById('otRestDay').value = 0;
-            document.getElementById('otNightRestDay').value = 0;
-            document.getElementById('otHoliday').value = 0;
-            document.getElementById('otNightHoliday').value = 0;
-            document.getElementById('results').innerHTML = '';
-            saveToLocalStorage();
-        }
-
-        // Simple encryption (XOR with password)
-        function encrypt(text, password) {
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                result += String.fromCharCode(text.charCodeAt(i) ^ password.charCodeAt(i % password.length));
-            }
-            return btoa(result); // Base64 encode
-        }
-
-        function decrypt(encoded, password) {
-            const text = atob(encoded);
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                result += String.fromCharCode(text.charCodeAt(i) ^ password.charCodeAt(i % password.length));
-            }
-            return result;
-        }
-
-        // Generate share link
-        function generateShareLink() {
-            const password = document.getElementById('sharePassword').value;
-            if (!password) {
-                alert('Vui lòng nhập mật khẩu!');
-                return;
-            }
-            const data = {
-                basicSalary: document.getElementById('basicSalary').value,
-                allowance: document.getElementById('allowance').value,
-                otWeekday: document.getElementById('otWeekday').value,
-                otNightWeekday: document.getElementById('otNightWeekday').value,
-                otRestDay: document.getElementById('otRestDay').value,
-                otNightRestDay: document.getElementById('otNightRestDay').value,
-                otHoliday: document.getElementById('otHoliday').value,
-                otNightHoliday: document.getElementById('otNightHoliday').value
-            };
-            const jsonData = JSON.stringify(data);
-            const encrypted = encrypt(jsonData, password);
-            const link = `${window.location.origin}${window.location.pathname}?data=${encodeURIComponent(encrypted)}`;
-            document.getElementById('shareLink').innerHTML = `Link chia sẻ: <a href="${link}">${link}</a>`;
-        }
-
-        // Load from URL
-        function loadFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const encodedData = urlParams.get('data');
-            if (encodedData) {
-                const password = prompt('Nhập mật khẩu để mở dữ liệu chia sẻ:');
-                if (password) {
-                    try {
-                        const decrypted = decrypt(encodedData, password);
-                        const data = JSON.parse(decrypted);
-                        document.getElementById('basicSalary').value = data.basicSalary;
-                        document.getElementById('allowance').value = data.allowance;
-                        document.getElementById('otWeekday').value = data.otWeekday;
-                        document.getElementById('otNightWeekday').value = data.otNightWeekday;
-                        document.getElementById('otRestDay').value = data.otRestDay;
-                        document.getElementById('otNightRestDay').value = data.otNightRestDay;
-                        document.getElementById('otHoliday').value = data.otHoliday;
-                        document.getElementById('otNightHoliday').value = data.otNightHoliday;
-                        calculateSalary(); // Auto calculate
-                    } catch (e) {
-                        alert('Mật khẩu sai hoặc dữ liệu lỗi!');
-                    }
-                }
-            }
-        }
-
-        // Auto save on input change
-        const form = document.getElementById('salaryForm');
-        form.addEventListener('input', saveToLocalStorage);
-    </script>
-</body>
-</html>
+        <div class="grid">
+            <div class="input-section">
+                <div class="card">
+                    <h2 class="card-title">📝 Thông tin thu nhập</h2>
+                    <div class="form-group">

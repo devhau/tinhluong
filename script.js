@@ -1,4 +1,4 @@
-// Tính lương thực nhận:22h
+// Tính lương thực nhận:23h
 class SalaryCalculator {
     constructor() {
         this.nightShiftRate = 0.3; // 30% phụ cấp đêm

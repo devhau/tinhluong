@@ -1134,31 +1134,16 @@
 
             <!-- Results Section -->
             <div id="resultsSection" class="results-section">
+                <div class="results-header">
+                    <h2 class="results-title">
+                        <i class="fas fa-chart-line"></i> Kết Quả Tính Lương
+                        <span class="calculation-tooltip" title="Lương thực nhận = Tổng thu nhập - Thuế TNCN - Bảo hiểm - Công đoàn">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                    </h2>
+                    <p class="results-subtitle">Công thức tính: Lương cơ bản + Phụ cấp + Tăng ca - Bảo hiểm - Thuế TNCN</p>
+                </div>
                 <div class="results-grid">
-                    <!-- Chi tiết tăng ca -->
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="result-icon">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <h3 class="result-title">Chi Tiết Tăng Ca</h3>
-                        </div>
-                        <div id="overtimeDetails" class="result-list">
-                            <!-- Nội dung sẽ được thêm bằng JavaScript -->
-                        </div>
-                         <!-- Results Ad Slot -->
-                        <div class="ad-container results-ad" id="results-ad-container">
-                            <ins class="adsbygoogle"
-                                style="display:block; min-height: 250px;"
-                                data-ad-client="ca-pub-7587631210958149"
-                                data-ad-slot="2224902419"
-                                data-ad-format="auto"
-                                data-full-width-responsive="true"></ins>
-                            <script>
-                                (adsbygoogle = window.adsbygoogle || []).push({});
-                            </script>
-                        </div>
-                    </div>
 
                     <!-- Chi tiết bảo hiểm -->
                     <div class="result-card">
@@ -1191,6 +1176,57 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Chi tiết tăng ca -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <h3 class="result-title">
+                                Chi Tiết Tăng Ca
+                                <span class="calculation-tooltip" title="Tiền tăng ca = Giờ tăng ca × Tiền theo giờ × Hệ số (150%-390%)">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                            </h3>
+                        </div>
+                        <!-- Thông tin tiền theo giờ và tổng giờ -->
+                        <div class="overtime-summary">
+                            <div class="result-item">
+                                <span class="result-label">
+                                    Tiền Theo Giờ:
+                                    <span class="calculation-tooltip" title="Lương cơ bản ÷ Số ngày làm việc ÷ 8 giờ">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </span>
+                                <span class="result-value" id="hourlyRate">0 VNĐ/giờ</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">
+                                    Tổng Giờ Tăng Ca:
+                                    <span class="calculation-tooltip" title="Cộng dồn tất cả giờ tăng ca từ 6 loại: ngày thường, đêm thường, ngày nghỉ, đêm ngày nghỉ, ngày lễ, đêm lễ">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </span>
+                                <span class="result-value" id="totalOvertimeHours">0 giờ</span>
+                            </div>
+                            <div id="overtimeDetails" class="result-list">
+                                <!-- Nội dung sẽ được thêm bằng JavaScript -->
+                            </div>
+                        </div>
+                         <!-- Results Ad Slot -->
+                        <div class="ad-container results-ad" id="results-ad-container">
+                            <ins class="adsbygoogle"
+                                style="display:block; min-height: 20px;"
+                                data-ad-client="ca-pub-7587631210958149"
+                                data-ad-slot="2224902419"
+                                data-ad-format="auto"
+                                data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        </div>
+                    </div>
+
 
                     <!-- Tổng quan lương -->
                     <div class="result-card">

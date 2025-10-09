@@ -1,4 +1,4 @@
-// Tính lương thực nhận:
+// Tính lương thực nhận:22h
 class SalaryCalculator {
     constructor() {
         this.nightShiftRate = 0.3; // 30% phụ cấp đêm
@@ -40,7 +40,10 @@ class SalaryCalculator {
     // Safari-compatible helper functions
     safeGetElement(id) {
         try {
-            return document.getElementById(id) || null;
+            console.log('DEBUG: safeGetElement called with id:', id);
+            var element = document.getElementById(id);
+            console.log('DEBUG: element found:', element);
+            return element || null;
         } catch (e) {
             console.warn('Error getting element:', id, e);
             return null;
@@ -49,14 +52,17 @@ class SalaryCalculator {
 
     safeSetText(id, text) {
         try {
+            console.log('DEBUG: safeSetText called with id:', id, 'text:', text);
             var element = this.safeGetElement(id);
+            console.log('DEBUG: element found:', element);
             if (element) {
                 element.textContent = text;
+                console.log('DEBUG: textContent set to:', text);
             } else {
                 console.warn('Element with id \'' + id + '\' not found');
             }
         } catch (e) {
-            // Error handled silently
+            console.error('Error in safeSetText:', e);
         }
     }
 
@@ -400,8 +406,11 @@ class SalaryCalculator {
     }
 
     calculateHourlyRate(basicSalary) {
+        console.log('DEBUG: calculateHourlyRate called with basicSalary:', basicSalary);
+
         // Tính tiền 1 giờ làm việc: Lương cơ bản / số ngày làm việc / 8 giờ
         var workingDays = parseInt(this.safeGetValue('workingDays', '26')) || 26;
+        console.log('DEBUG: workingDays:', workingDays);
 
         // Đảm bảo workingDays không phải 0 hoặc âm
         if (workingDays <= 0 || isNaN(workingDays)) {
@@ -417,23 +426,27 @@ class SalaryCalculator {
 
         // Tính toán với các bước riêng biệt để tránh lỗi Safari
         var daysDivided = basicSalary / workingDays;
+        console.log('DEBUG: daysDivided:', daysDivided);
         if (isNaN(daysDivided)) {
             console.warn('Days division resulted in NaN:', basicSalary, '/', workingDays);
             return 0;
         }
 
         var hoursDivided = daysDivided / 8;
+        console.log('DEBUG: hoursDivided:', hoursDivided);
         if (isNaN(hoursDivided)) {
             console.warn('Hours division resulted in NaN:', daysDivided, '/', 8);
             return 0;
         }
 
         var roundedResult = Math.round(hoursDivided);
+        console.log('DEBUG: roundedResult:', roundedResult);
         if (isNaN(roundedResult)) {
             console.warn('Rounding resulted in NaN:', hoursDivided);
             return 0;
         }
 
+        console.log('DEBUG: calculateHourlyRate returning:', roundedResult);
         return roundedResult;
     }
 
@@ -459,6 +472,7 @@ class SalaryCalculator {
 
             var totalOvertimeSalary = 0;
             var overtimeDetails = [];
+            var totalOvertimeHours = 0;
 
             for (var type in overtimeHours) {
                 if (overtimeHours.hasOwnProperty(type)) {
@@ -467,6 +481,7 @@ class SalaryCalculator {
                         var rate = this.overtimeRates[type];
                         var salary = Math.round(hours * hourlyRate * rate);
                         totalOvertimeSalary += salary;
+                        totalOvertimeHours += hours;
 
                         overtimeDetails.push({
                             type: this.getOvertimeTypeName(type),
@@ -478,7 +493,7 @@ class SalaryCalculator {
                 }
             }
 
-            return { totalOvertimeSalary: totalOvertimeSalary, overtimeDetails: overtimeDetails };
+            return { totalOvertimeSalary: totalOvertimeSalary, overtimeDetails: overtimeDetails, totalOvertimeHours: totalOvertimeHours };
         } catch (error) {
             console.error('Error calculating overtime salary:', error);
             return { totalOvertimeSalary: 0, overtimeDetails: [] };
@@ -653,7 +668,13 @@ class SalaryCalculator {
             var overtimeResult = this.calculateOvertimeSalary();
             var totalOvertimeSalary = overtimeResult.totalOvertimeSalary;
             var overtimeDetails = overtimeResult.overtimeDetails;
+            var totalOvertimeHours = overtimeResult.totalOvertimeHours || 0;
             var insurance = this.calculateInsurance();
+
+            // Calculate hourly rate
+            var hourlyRate = this.calculateHourlyRate(basicSalary);
+
+            console.log('DEBUG: hourlyRate calculated:', hourlyRate, 'from basicSalary:', basicSalary);
 
             // Gross salary (before tax)
             var grossSalary = basicTotal + nightAllowance + totalOvertimeSalary + otherIncome;
@@ -668,6 +689,7 @@ class SalaryCalculator {
             var netSalary = grossSalary - taxResult.tax - insurance.totalDeductions;
 
             // Update UI
+            console.log('DEBUG: About to call updateResults with hourlyRate:', hourlyRate);
             this.updateResults({
                 basicTotal: basicTotal,
                 nightAllowance: nightAllowance,
@@ -677,7 +699,9 @@ class SalaryCalculator {
                 taxResult: taxResult,
                 netSalary: netSalary,
                 overtimeDetails: overtimeDetails,
-                insurance: insurance
+                insurance: insurance,
+                hourlyRate: hourlyRate,
+                totalOvertimeHours: totalOvertimeHours
             });
 
             this.showNotification('Tính lương thành công!', 'success');
@@ -696,12 +720,18 @@ class SalaryCalculator {
 
     updateResults(data) {
         try {
+            console.log('DEBUG: updateResults called with data:', data);
+
             // Helper function để format số an toàn với validation nghiêm ngặt hơn
             var safeFormatNumber = function(num) {
+                console.log('DEBUG: safeFormatNumber called with num:', num, 'type:', typeof num);
                 if (typeof num !== 'number' || isNaN(num) || num === null || num === undefined) {
+                    console.log('DEBUG: safeFormatNumber returning 0 for invalid num');
                     return '0';
                 }
-                return num.toLocaleString('vi-VN');
+                var result = num.toLocaleString('vi-VN');
+                console.log('DEBUG: safeFormatNumber returning:', result);
+                return result;
             };
 
             // Update overtime details
@@ -719,8 +749,9 @@ class SalaryCalculator {
                             var typeText = detail.type || 'Không xác định';
                             var hoursText = typeof detail.hours === 'number' && !isNaN(detail.hours) ? detail.hours : 0;
                             var salaryText = safeFormatNumber(detail.salary || 0);
+                            var hourlyRateText = safeFormatNumber(data.hourlyRate * (detail.rate || 1));
 
-                            detailEl.innerHTML = '<span class="result-label">' + typeText + ' (' + hoursText + 'h):</span><span class="result-value">' + salaryText + ' VNĐ</span>';
+                            detailEl.innerHTML = '<div class="overtime-detail"><span class="result-label">' + typeText + ' (' + hoursText + 'h):</span><span class="result-value">' + salaryText + ' VNĐ</span><span class="hourly-rate" title="Tiền theo giờ × Hệ số ' + ((detail.rate || 1) * 100) + '% = ' + hourlyRateText + ' VNĐ/h">(' + hourlyRateText + ' VNĐ/h)</span></div>';
                             overtimeDetailsEl.appendChild(detailEl);
                         }
                     }
@@ -728,6 +759,25 @@ class SalaryCalculator {
                     overtimeDetailsEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-md); font-style: italic;">Không có giờ tăng ca</p>';
                 }
             }
+
+            // Update overtime summary với thông tin tiền theo giờ và tổng giờ
+            console.log('DEBUG: About to update hourlyRate with data.hourlyRate:', data.hourlyRate);
+            var formattedHourlyRate = safeFormatNumber(data.hourlyRate) + ' VNĐ/giờ';
+            console.log('DEBUG: formattedHourlyRate:', formattedHourlyRate);
+            this.safeSetText('hourlyRate', formattedHourlyRate);
+
+            // Hiển thị tooltip với thông tin chi tiết về cách tính tiền theo giờ
+            var hourlyRateElement = this.safeGetElement('hourlyRate');
+            console.log('DEBUG: hourlyRateElement found:', hourlyRateElement);
+            if (hourlyRateElement) {
+                var basicSalary = this.parseMoneyValue(this.safeGetValue('basicSalary', '0'));
+                var workingDays = parseInt(this.safeGetValue('workingDays', '26')) || 26;
+                var hourlyRateTooltip = 'Lương cơ bản: ' + basicSalary.toLocaleString('vi-VN') + ' VNĐ ÷ ' + workingDays + ' ngày ÷ 8 giờ = ' + safeFormatNumber(data.hourlyRate) + ' VNĐ/giờ';
+                hourlyRateElement.title = hourlyRateTooltip;
+                console.log('DEBUG: Tooltip set:', hourlyRateTooltip);
+            }
+
+            this.safeSetText('totalOvertimeHours', (data.totalOvertimeHours || 0) + ' giờ');
 
             // Update summary với safe formatting
             this.safeSetText('basicTotal', safeFormatNumber(data.basicTotal) + ' VNĐ');
@@ -817,13 +867,15 @@ class SalaryCalculator {
                 }
             }
 
+            // Reset overtime summary
+            this.safeSetText('hourlyRate', '0 VNĐ/giờ');
+            this.safeSetText('totalOvertimeHours', '0 giờ');
+
             // Hide results
             var resultsSection = this.safeGetElement('resultsSection');
             if (resultsSection) {
                 resultsSection.style.display = 'none';
             }
-
-            // Hide ad containers
             var adContainers = document.querySelectorAll('.ad-container');
             for (var j = 0; j < adContainers.length; j++) {
                 var container = adContainers[j];

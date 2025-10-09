@@ -812,6 +812,34 @@
             .result-card {
                 padding: var(--spacing-lg);
             }
+
+            /* Mobile AdSense Optimization */
+            .ad-container.header-ad {
+                margin: var(--spacing-lg) 0;
+                padding: var(--spacing-sm);
+                min-height: 50px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            .ad-container.results-ad {
+                margin: var(--spacing-lg) 0;
+                padding: var(--spacing-md);
+                min-height: 100px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            .ad-container.footer-ad {
+                margin-top: var(--spacing-lg);
+                padding: var(--spacing-md);
+                min-height: 100px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
         }
 
         /* Print Styles */
@@ -845,6 +873,34 @@
             .result-card {
                 padding: var(--spacing-md);
             }
+
+            /* Extra Small Mobile AdSense Optimization */
+            .ad-container.header-ad {
+                margin: var(--spacing-md) 0;
+                padding: var(--spacing-xs);
+                min-height: 40px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            .ad-container.results-ad {
+                margin: var(--spacing-md) 0;
+                padding: var(--spacing-sm);
+                min-height: 80px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            .ad-container.footer-ad {
+                margin-top: var(--spacing-md);
+                padding: var(--spacing-sm);
+                min-height: 80px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
         }
 
         /* Focus Styles */
@@ -868,6 +924,9 @@
             height: 0;
             overflow: hidden;
             transition: opacity 0.3s ease, height 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .ad-container.ad-loaded {
@@ -1109,7 +1168,7 @@
         <!-- Header Ad Slot -->
         <div class="ad-container header-ad" id="header-ad-container">
             <ins class="adsbygoogle"
-                 style="display:block; min-height: 90px;"
+                 style="display:block; min-height: 50px;"
                  data-ad-client="ca-pub-7587631210958149"
                  data-ad-slot="6170094271"
                  data-ad-format="auto"
@@ -1216,7 +1275,7 @@
                          <!-- Results Ad Slot -->
                         <div class="ad-container results-ad" id="results-ad-container">
                             <ins class="adsbygoogle"
-                                style="display:block; min-height: 20px;"
+                                style="display:block; min-height: 100px;"
                                 data-ad-client="ca-pub-7587631210958149"
                                 data-ad-slot="2224902419"
                                 data-ad-format="auto"
@@ -1326,7 +1385,7 @@
     <!-- Footer Ad Slot -->
     <div class="ad-container footer-ad" id="footer-ad-container">
         <ins class="adsbygoogle"
-             style="display:block; min-height: 280px;"
+             style="display:block; min-height: 100px;"
              data-ad-client="ca-pub-7587631210958149"
              data-ad-slot="8598739073"
              data-ad-format="auto"

@@ -1,7 +1,7 @@
 // Tính lương thực nhận:23h
 class SalaryCalculator {
     constructor() {
-        this.nightShiftRate = 0.3; // 30% phụ cấp đêm
+        this.nightShiftRate = 1.8; // 30% phụ cấp đêm
         this.workingDays = 26; // Số ngày làm việc tiêu chuẩn trong tháng
 
         // Overtime rates

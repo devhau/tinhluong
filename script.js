@@ -14,16 +14,14 @@ class SalaryCalculator {
             nightHoliday: 3.9    // 390%
         };
 
-        // Tax brackets for Vietnamese income tax (2024)
-        // Biểu thuế lũy tiến từng phần theo Nghị quyết 954/2020/UBTVQH14
+        // Tax brackets for Vietnamese income tax (2026)
+        // Biểu thuế lũy tiến từng phần mới nhất áp dụng từ 01/01/2026
         this.taxBrackets = [
-            { min: 0, max: 5000000, rate: 0.05 },      // 5% cho phần thu nhập từ 0 đến 5 triệu
-            { min: 5000000, max: 10000000, rate: 0.10 }, // 10% cho phần thu nhập từ 5 đến 10 triệu
-            { min: 10000000, max: 18000000, rate: 0.15 }, // 15% cho phần thu nhập từ 10 đến 18 triệu
-            { min: 18000000, max: 32000000, rate: 0.20 }, // 20% cho phần thu nhập từ 18 đến 32 triệu
-            { min: 32000000, max: 52000000, rate: 0.25 }, // 25% cho phần thu nhập từ 32 đến 52 triệu
-            { min: 52000000, max: 80000000, rate: 0.30 }, // 30% cho phần thu nhập từ 52 đến 80 triệu
-            { min: 80000000, max: Infinity, rate: 0.35 }  // 35% cho phần thu nhập trên 80 triệu
+            { min: 0, max: 10000000, rate: 0.05 },      // 5% cho phần thu nhập đến 10 triệu/tháng
+            { min: 10000000, max: 30000000, rate: 0.10 }, // 10% cho phần thu nhập từ 10 đến 30 triệu/tháng
+            { min: 30000000, max: 60000000, rate: 0.20 }, // 20% cho phần thu nhập từ 30 đến 60 triệu/tháng
+            { min: 60000000, max: 100000000, rate: 0.30 }, // 30% cho phần thu nhập từ 60 đến 100 triệu/tháng
+            { min: 100000000, max: Infinity, rate: 0.35 }  // 35% cho phần thu nhập trên 100 triệu/tháng
         ];
 
         this.init();
@@ -35,6 +33,7 @@ class SalaryCalculator {
         this.setupEventListeners();
         this.setupTheme();
         this.formatMoneyInputs();
+        this.calculateSalary(); // Tính toán lần đầu khi trang tải xong
     }
 
     // Safari-compatible helper functions
@@ -225,13 +224,8 @@ class SalaryCalculator {
 
     setupEventListeners() {
         try {
-            // Calculate button
-            var calculateBtn = this.safeGetElement('calculateBtn');
-            if (calculateBtn) {
-                calculateBtn.addEventListener('click', function() {
-                    this.calculateSalary();
-                }.bind(this));
-            }
+            // Nút Tính Lương đã bị xóa, tính toán tự động qua event listeners
+            // Calculate button is removed, calculation is now automatic
 
             // Reset button
             var resetBtn = this.safeGetElement('resetBtn');
@@ -279,12 +273,13 @@ class SalaryCalculator {
                 }.bind(this));
             }
 
-            // Auto-save on input change
+            // Auto-save and auto-calculate on input change
             var inputs = document.querySelectorAll('.form-input');
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('input', function() {
                     this.saveToLocalStorage();
                     this.formatMoneyInputs();
+                    this.calculateSalary(); // Tự động tính lương khi nhập liệu
                 }.bind(this));
             }
 
@@ -578,9 +573,18 @@ class SalaryCalculator {
             // Công đoàn cố định 40.000 VNĐ
             var unionFeeAmount = this.parseMoneyValue(this.safeGetValue('unionFee', '40000'));
 
-            var socialInsAmount = Math.round(insuranceBase * socialInsuranceRate);
-            var healthInsAmount = Math.round(insuranceBase * healthInsuranceRate);
-            var unemploymentInsAmount = Math.round(insuranceBase * unemploymentInsuranceRate);
+            // Áp dụng mức trần đóng bảo hiểm (Caps) cho năm 2026
+            // Mức lương cơ sở 2026: 2.340.000 VNĐ. Trần BHXH/BHYT = 20 * Lương cơ sở = 46.800.000 VNĐ
+            // Lương tối thiểu vùng I 2026: 5.310.000 VNĐ. Trần BHTN = 20 * Lương tối thiểu vùng = 106.200.000 VNĐ
+            var baseSalaryCap = 46800000;
+            var unemploymentCap = 106200000;
+
+            var insuranceBaseLimited = Math.min(insuranceBase, baseSalaryCap);
+            var unemploymentBaseLimited = Math.min(insuranceBase, unemploymentCap);
+
+            var socialInsAmount = Math.round(insuranceBaseLimited * socialInsuranceRate);
+            var healthInsAmount = Math.round(insuranceBaseLimited * healthInsuranceRate);
+            var unemploymentInsAmount = Math.round(unemploymentBaseLimited * unemploymentInsuranceRate);
             var totalInsurance = socialInsAmount + healthInsAmount + unemploymentInsAmount;
             var totalDeductions = totalInsurance + unionFeeAmount;
 
@@ -607,8 +611,8 @@ class SalaryCalculator {
 
     calculateTax(taxableIncome) {
         try {
-            // Áp dụng mức khởi điểm 11.4 triệu VNĐ và giảm trừ gia cảnh theo Luật Thuế TNCN mới nhất (2024)
-            var taxFreeThreshold = 11400000; // Mức khởi điểm miễn thuế
+            // Áp dụng mức giảm trừ gia cảnh mới nhất áp dụng từ 01/01/2026
+            var taxFreeThreshold = 15500000; // Mức giảm trừ cho bản thân: 15.5 triệu VNĐ
 
             // Lấy số người phụ thuộc
             var dependents = parseInt(this.safeGetValue('dependents', '0'));
@@ -619,8 +623,8 @@ class SalaryCalculator {
                 dependents = 0;
             }
 
-            // Tính giảm trừ gia cảnh: 11.4 triệu + 4.4 triệu/người phụ thuộc (theo Nghị định 125/2020/NĐ-CP)
-            var familyDeduction = taxFreeThreshold + (dependents * 4400000);
+            // Tính giảm trừ gia cảnh cho người phụ thuộc: 6.2 triệu/người/tháng (với quy định 2026)
+            var familyDeduction = taxFreeThreshold + (dependents * 6200000);
 
             // Thu nhập chịu thuế thực tế (sau khi trừ giảm trừ gia cảnh)
             var actualTaxableIncome = Math.max(0, taxableIncome - familyDeduction);
@@ -704,7 +708,8 @@ class SalaryCalculator {
                 totalOvertimeHours: totalOvertimeHours
             });
 
-            this.showNotification('Tính lương thành công!', 'success');
+            // Tự động tính lương nên không cần hiện thông báo thành công mỗi lần nhập
+            // this.showNotification('Tính lương thành công!', 'success');
 
             // Recheck ad loading after calculation
             var self = this;
@@ -755,9 +760,19 @@ class SalaryCalculator {
                             overtimeDetailsEl.appendChild(detailEl);
                         }
                     }
-                } else {
-                    overtimeDetailsEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-md); font-style: italic;">Không có giờ tăng ca</p>';
                 }
+            }
+
+            // Thực hiện ẩn vùng nếu không có dữ liệu
+            var overtimeCard = this.safeGetElement('overtimeCard');
+            if (overtimeCard) {
+                overtimeCard.style.display = (data.totalOvertimeHours > 0) ? 'block' : 'none';
+            }
+
+            var insuranceCard = this.safeGetElement('insuranceCard');
+            if (insuranceCard) {
+                // Chỉ ẩn khi tất cả các khoản bảo hiểm và công đoàn đều bằng 0
+                insuranceCard.style.display = (data.insurance.totalDeductions > 0) ? 'block' : 'none';
             }
 
             // Update overtime summary với thông tin tiền theo giờ và tổng giờ
@@ -798,16 +813,32 @@ class SalaryCalculator {
             this.safeSetText('unionFeeAmount', safeFormatNumber(data.insurance.unionFeeAmount) + ' VNĐ');
             this.safeSetText('totalDeductions', safeFormatNumber(data.insurance.totalDeductions) + ' VNĐ');
 
+            // Ẩn các hàng trong tổng quan nếu không có dữ liệu
+            var self = this;
+            var toggleSummaryRow = function(id, value) {
+                var el = self.safeGetElement(id);
+                if (el && el.parentElement) {
+                    el.parentElement.style.display = (value > 0) ? 'flex' : 'none';
+                }
+            };
+
+            toggleSummaryRow('nightAllowance', data.nightAllowance);
+            toggleSummaryRow('totalOvertime', data.totalOvertimeSalary);
+            toggleSummaryRow('incomeTax', data.taxResult.tax);
+            toggleSummaryRow('dependentsCount', data.taxResult.dependents);
+            toggleSummaryRow('familyDeduction', data.taxResult.tax > 0 ? 1 : 0); // Chỉ hiện khi có thuế hoặc khi có người phụ thuộc (thực chất dependents đã được xử lý trên r)
+            
+            // Đặc biệt cho giảm trừ gia cảnh, chỉ hiện khi đã trừ
+            var familyDeductionEl = this.safeGetElement('familyDeduction');
+            if (familyDeductionEl && familyDeductionEl.parentElement) {
+                familyDeductionEl.parentElement.style.display = (data.taxResult.tax > 0 || data.taxResult.dependents > 0) ? 'flex' : 'none';
+            }
+
             // Show results section
             var resultsSection = this.safeGetElement('resultsSection');
             if (resultsSection) {
                 resultsSection.style.display = 'block';
-
-                // Scroll to results
-                resultsSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                // Không tự động cuộn (scroll) khi đang nhập liệu để tránh gây phiền cho người dùng
             }
 
             // Recheck ad loading for better user experience
@@ -885,6 +916,7 @@ class SalaryCalculator {
 
             this.saveToLocalStorage();
             this.formatMoneyInputs();
+            this.calculateSalary(); // Cập nhật lại kết quả sau khi khôi phục
             this.showNotification('Đã khôi phục giá trị mặc định!', 'success');
         } catch (error) {
             console.error('Error resetting form:', error);
